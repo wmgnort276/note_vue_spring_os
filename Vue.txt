@@ -1,0 +1,317 @@
+application instance: app = createApp()
+
+- app config: sử dụng app (application instamce) => config errorHandler,
+component (component có thế được sử dụng ở mọi nơi trong app)
+
+
+=========== Mounted(), created() in Vue ========
+mouted(): khi component được thêm vào DOM
+created(): trước khi component được thêm vào DOM (Khi được khởi tạo)
+- nên dùng mounted() khi fetch data: fetch data sẽ luôn là asynchronous
+nhưng, nhưng Vue không đợi created() thực hiện xong => lỗi đồng bộ
+
+=========== Các đối tượng được sử dụng trong template expression ==============
+https://github.com/vuejs/core/blob/main/packages/shared/src/globalsWhitelist.ts#L3
+Biếu thức JS chỉ được sử dụng những nội dung trong list này
+
+================ directive ============
+Xem them mot so directive 
+https://vuejs.org/api/built-in-directives.html#v-html
+- v-html: là 1 directive trong vue (đối tượng đặc biệt trong vue), khi sử dụng
+	nội dung của đối tượng sẽ là biến được tham chiếu bởi v-html
+- v-html : chỉ nên dùng với 1 đối tượng tin cậy trong vue, không nên dùng với
+	content được cung cấp bởi người dùng (nguy cơ tấn công XSS)
+
+v-bind:id="dynamicId" => làm đối tượng id đồng bộ với biến dynamicId, 
+nếu dynamicId là null / undefined thuộc tính id sẽ bị loại bỏ khỏi element
+:id (dạng viết tắt), 
+có thể v-bind một object
+VD: objectAttr = {
+  class: 'name',
+  someAttr: 'ahh'
+}
+
+<div v-bind="objectAttr"></div>
+
+:disabled="diableVariable" (hay dùng với button, input ...)
+
+:disabled="(1==1) ? true : false" : biểu thức JS có thể được thực thi trong 
+giá trị của Vue directives
+
+v-if: sẽ trực tiếp làm remove/insert element
+
+v-on:click="handleClick" : gắn sự kiện click 
+@click
+
+Dùng dynamic argument để tạo sự kiện dom hoặc attributes có thế nhận 
+được nhiều giá trị, giá trị dynamic argument sẽ được convert về lower case
+@[dynamicEventName]="doSomthing"
+
+@submit.prevent: .prevent là modifiers, gán thêm cho sự kiện v-on:submit 
+sử dụng event.preventDefault()
+
+=========== Reavtivity ==============
+=====================================
+
+- data option: là 1 function return list các state
+data() {
+   return {
+	instamce1: 'helo', -> state
+   }
+}
+- Các instance (tham chiếu bởi this trong vue ) của 1 component sẽ 
+được thêm vào khi cá instance lần đầu tiên  được khởi tạo (khi component 
+được mount)
+- Với các state trong top-level data(), không nên dùng biến bắt đầu với 
+$ và _ vì đây là tên các biến sử dụng nội bộ của vue hoặc các built-in API
+vd $ref ....
+
+
+- Method không nên sử dụng arrow function, vì nó ngăn chặn Vue binding this
+- khi thay đổi state có theert DOM chưa update ngay, 
+có thể sử dụng nextTick để đảm bảo DOM đã được update khi state thay đổi
+
+
+===========  Proxy trong JS ===========
+- Custom khả năng truy cập vào đối tượng, custome các internal method 
+của đối tượng đó (ví dụ: delete, setProtofypeOf ...)
+- Nếu gán 1 instance là 1 object theo kiểu
+const newObject = {
+      name: 'newName',
+      age: 2
+    }
+this.testObject = newObject;
+this.isEqual = (newObject ===  this.testObject)  ---> false
+vì instance testObject khi được gán bằng object mới sẽ trở thành proxy của 
+đối tượng đó
+
+
+==================== conputed in vue ==================
+======================================================
+
+computed là 1 thuộc tính của component giống như methods, thuộc tính này
+là 1 object và chứa bên trong các phương thức
+computed: {
+	method() {
+		return <expression tính toán những giá trị phức tạp và được sử dụng 
+			nhiều lần >
+	}
+}
+- những giá trị phức tạp có thể được tính toán trong method và được gọi trong 
+template 
+{{ calComplexValue() }}
+tuy nhiên ta nên ưu tiên dùng computed vì khả năng cache lại dữ liệu dựa trến state 
+ngược lại method sẽ luôn chạy cho dù giá trị state không hề thay đổi
+
+
+======= class , style của html tag ==========================
+=============================================================
+https://vuejs.org/guide/essentials/class-and-style.html
+- bind sử dụng object 
+<div :class="{ active: isActive }"></div> 
+thẻ div bên trên sẽ có class name là active nếu biến isactive trả về giá trị true
+active ở đây là giá trị dạng string
+- bind sử dụng array 
+return {
+    activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+<div :class="[activeClass, errorClass]"></div>
+activeClass: là state của component
+
+- nếu component ( MyComponent )  có 1 root element, vd
+<p class="foo bar">Hi!</p>
+<MyComponent class="baz boo" />
+==> class được render có class="foo bar baz boo"
+- nếu có nhiều root elements trong component, cần chỉ định element được 
+kế thừa class bằng thuộc tính $attr
+<p :class="$attrs.class">Hi!</p>
+
+============= conditonal redering ===========================
+============================================================
+v-if: có thể dùng trong template element
+v-show: chỉ thực thiện những thay đổi css, và ko thể dùng trong template element
+
+v-if có độ ưu tiên xử lý trước so với v-for khi đặt trong cùng 1 element
+
+
+
+================= List  rendering ================
+v-for= "(item, key, index) in object"
+item : giá trị của trường
+key : tên trường
+index : vị trí (thứ tự) của trường trong object
+
+- Render ra 1 list cần có :key, key có thể chấp nhận string, numbers
+- Truyền list render từ component và sử dụng như data 
+<Component
+  v-for="(item, index) in items"
+  :item="item"
+  :index="index"
+  :key="item.id"
+/>
+
+
+========== interpolation trong JS =============
+`normal string ${varibale to be computed} other normal string`
+- interpolation hỗ trợ việc viết string có xuống dòng
+
+
+======== Form input binding ============
+- Với thẻ input type="checkboc", vue hỗ trợ 2 giá trị bắt sự thay đổi 
+của input 
+:true-value="dynamicTrueValue"
+:false-value="dynamicFalseValue"
+giá trị biến đang được binding bởi thẻ input sẽ có giá trị tương úng
+với 2 biến dynamic đó
+
+=============== Watchers =============
+immediate : watcher callback được gọi 
+
+Callback Flush Timing : watcher sẽ truy cập vào DOM sau khi DOM được update
+
+
+
+
+============ Refs ==============
+-Dùng để tham chiêu trực tiếp đến element trong DOM
+- this.$refs.input.focus() : tự động focus đối tượng có ref="input"
+- Chỉ có thể tham chiếu đến đối tượng qua thuộc tính ref sau khi đối tượng đã
+được mounted
+- Có thể dùng ref trong v-for và khi tham chiếu đến sẽ được 1 mảng chứa tất 
+cả các elements trong v-for, tuy nhiên thứ tự eelemnet trong mảng này 
+sẽ không đảm bảo như trong mảng gốc
+
+- Dùng ref cho component child trong component cha
+<Child ref="child" />
+this.$refs.child tương tự với tham chiếu this trong component con
+vì vậy component cha sẽ có thể truy cập toàn bộ vào component con
+- Thuộc tính expose sẽ dùng để giới hạn các method được truy cập vào 
+component con
+
+
+====== Components ========
+- props được pass xuống components sẽ trở thành 1 thuộc tính của component instance
+- <slot/> dùng để pass text content vào component con
+
+- Dynamic Component: chuyển đổi giữa các component dựa trên thuộc tính :is
+vd: :is="curentTab", khi được switch theo cách này, component sẽ được unmounted
+
+- conponent đặt bên trong các thẻ <li>, <ul> <table> sẽ đẩy ra error
+-> giải pháp: dùng :is attribute và tiền tố vue:
+<table>
+  <tr is="vue:blog-post-row"></tr>
+</table>
+
+==== Lifecycle ==============
+
+
+=============== Props ==========
+convention
+ở component cha gọi đến:           prop-name="name1"
+props khai báo ở component con:    propName: String
+
+- chú ý với props
++ với giá trị string static, dùng cách truyền props thông thường
+<MyComponent greeting-message="hello" />
++ Với giá trị là biến hoặc giá trị js như true, false => dùng v-bind 
+<MyComponent :greeting-message="true" /> = <MyComponent v-bind:greeting-message="true" />
+
+- Việc thay đổi props từ component con sẽ bị warning
+- Nếu cần thay đổi giá trị props trong component con (ví dụ )
+chuyển text về dạng lower case -> nên dùng trong computed 
+
+- Việc thay đổi props nếu đó là nested trong object và array là được phép, tuy 
+nhiên cần tránh sử dụng mà cần emit đến component cha để thực hiện
+thay đổi object đó.
+
+- Validate props diễn ra trước khi instance được tạo ra vì vậy
+dữ liệu trong data và computed sẽ chưa available trong validator
+
+
+========= emit event ===============
+- đối số trong hàm emit sẽ được chọn làm tham số đầu tiên trong
+method được emit
+
+========= Component v-model ============
+- Mặc định v-model trong component sẽ có giá trị component con là modelValue, thay đổi 
+emits: ['update:modelValue]
+- Nếu muốn custome giá trị props này: v-model:custome-props="value"
+- v-model .trim, .lazy, .number là các modifiers mặc định trong Vue, ngoài ra còn 
+có thể sử dụng custom modifiers
+VD: v-model.capitalize (để custom input thành chữ hoa), v-model:title.capitalize
+Trong component con, sẽ sử dụng thuộc tính 
+modelModifiers: {
+
+}
+
+
+===== Fallthrough attribute =====
+- Với các thuộc tính như class, style, id, khi được khỏi tạo cho component ở component cha
+các thuộc tính này tự động được thêm vào component con mà không cần phải khai báo trong props
+- Với các event, nếu được khai báo ở component cha và cả ở component con, khi được kích hoạt
+cả 2 sự kiện đều được gọi
+
+
+====== Slots =========
+- dùng để truyền template content xuống component con
+- slot outlet: nới chứa template truyền từ component cha
+- fallback: dự phòng (dùng nếu component cha không truyền content cho xuống component con)
+- slot nếu không khai báo thuộc tính name sẽ có giá trị name mặc định là default, thuộc tính name
+dùng để tạo giá trị id riêng cho từng slot
+- ở component cha, để phân biệt slot dùng v-slot
+VD v-slot:header hoặc #header
+- Dùng dynamic slot name : #[dynamicSlotName]
+- Slot có thể truy cập vào thuộc tính của component con
+VD v-slot:header="slotProps" hoặc #header="slotProps"
+
+==== provide / inject ====
+- Dùng cho việc truyền props từ component cách xa đến component hiện tại
+- Dùng trong component / hoặc dùng trong app - level 
+app.provide('key', 'value')
+- Để tạo props reactive, dùng compute (khi varibale thay đổi ở component cha sự thay đổi sẽ
+cập nhật ỏ component con)
+
+13/4
+==== Mixin in VueJS ===========
+- Sử dụng chủ yếu trong vue 2, vue 3 đã chuyển sang composition component
+==== Routing trong Vue ==============
+==== Store in vue ========== 
+
+
+
+
+=================================== Routing VueJS ============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

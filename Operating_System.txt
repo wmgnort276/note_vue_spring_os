@@ -1,0 +1,33 @@
+- OS from Tanenbaum text book
+I. I/O - thiết bị vào ra
+1. Tiêu chuẩn của disk: SATA tiêu chuẩn disk của IBM (serial advanced technology attachment)
+2. Device -> Controller -> Driver (dùng để giao tiếp với controller của device) 
+3. Driver thường sẽ được đặt vào OS và chạy ở kernel mode
+4. Các cách đặt driver vào kernel
+    4.1 Relink kernel với driver mới, sau đó reboot system (dùng trong Unix)
+    4.2 Tại đường dẫn + reboot system, tại thời điểm reboot, hệ điều hành sẽ load driver cần thiết (dùng trong window)
+    4.3 Cài đặt driver dynamically, không cần reboot (ví dụ USB, IEEE device khi được sử dụng sẽ cần load drivers phù hợp
+        mà không cần reboot lại hệ thống)
+5. Mỗi controller có những thanh ghi để OS giao tiếp với nó. Ví dụ disk có các thanh ghi để lưu trữ: địa chỉ disk, 
+địa chỉ bộ nhớ, số lượng sector
+Trong nhiều hệ thống, thanh ghi thiết bị (device registers) được ánh xạ đến không gian để chỉ của OS nên nó được đọc và ghi như 1 
+địa chỉ thông thường. Ở những thiết hệ thống khác, thanh ghi thiết bị được đặt vào I/O port space và có địa chỉ cổng riêng.
+5. Có 3 cách gọi Input vs Output 
+        5.1 User gọi lời gọi hệ thống, lời gọi được chuyển thành lời gọi thủ tục (procedure call) đến driver phù hợp.
+            Driver sẽ start I/O và giám sát thiết bị đã hoạt động hoàn thành hay chưa (busy waiting: vì CPU sẽ phải đợi đến thi 
+            thiết bị hoàn thành)
+        5.2 Tạo ra 1 interupt để báo hiệu công việc I/O đã hoàn thành. Trong OS có interrupt controller để kiểm soát yêu cầu ngắt 
+            từ nhiều thiết bị khác nhau. Mỗi thiết bị có interrupt handler để thông báo interrupt của device đó, tùy theo mức độ
+            ưu tiên của device mà interrupt tương ứng sẽ được xử lý.
+            Đoạn cuối về interrupt chưa hiểu lắm
+        5.3 Sử dụng phần cứng đặc biệt: DMA (Direact Memory Access)
+
+II. Buses
+- Có nhiều bus trong hệ thống: cache, memory, PCIe..., bus chính trong máy tính là PCIe
+PCIe sử dụng serial bus architecture (thay vì parallel bus architexture) -> dữ liệu gửi hết 
+trên một đường (called lane)
+(Xem hình 1-12: page 63)
+- CPU giao tiếp với memory bằng DDR3 bus
+- CPU giao tiếp với thiết vị bên ngoài bằng PCIe (Peripheral Component Interconnect Express) bus
+- Giao tiếp với các thiết bị khác qua Hub thông qua bus DMI (Direct Media Interface)
+- Hub kết nối tất cả các thiết bị dùng USB

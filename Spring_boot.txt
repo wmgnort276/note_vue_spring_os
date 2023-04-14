@@ -1,0 +1,213 @@
+pass mysql :
+Nam276201@
+
+
+Shift + enter : create new line at middle of current line
+alt + insert : insert getter, setter, toString method
+
+@JsonIgnore: đánh dấu trường là ko cần thiết (ví dụ khi map object)
+
+============= 
+Đối tượng Authentication đại diện cho token của user đã được xác thực
+đối tượng này được chứa trong SecurityContextHolder 
+- các phương thức: getDetails, getPrinciple(), isAuthenticated()
+getPrincipal(): trả về đối tượng UserDetails
+===================
+AuthenticationManager có DaoAuthenticationProvider nhằm xác thực username, 
+password, nếu username password thỏa mãn sẽ trả lại một đối tượng Authentication
+
+================
+Method parse() trong java
+- Dùng để extract thông tin cần thiết, thường là extract từ string để lấy thông 
+tin (VD thông tin Date lưu dưới dạng String)
+
+=========================== 
+// Upcasting is rarely used 
+upcasting : Parent p =(Parent) new Child();
+
+downcasting: Parent p = new Child();
+	     Child c = (Child) p;
+
+==================== @Lob ====================
+Lob Data in Hibernate
+Gồm 2 loại
+CLOB: character large object chứa dữ liệu text lớn
+BLOB: Binary Large object chứa dữ liệu nhị phân như ảnh video,audio
+
+
+============= Persist trong hibernate java========
+- Chuyển đổi trạng thái entity sang câu lệnh sql
+- Persist chuyển entity từ trạng thái transitent sang trạng thái 
+persistance (trạng thái bền vững)
+- Gọi đến persist method sẽ thực thi câu lệnh insert (làm cập nhật id entity)
+ thay vì phải đợi đến flush time để làm điều này
+
+========= Flush time ========
+- thời diểm JPA-Hibernate đồng bộ hóa các thay đổi của entity xuống DB
+- Trong JPA, đây là thời điểm mà các câu truy vấn kết nối đến DB
+
+============== Vòng đời entity trong Hibernate và JPA============
+https://techmaster.vn/posts/36269/trang-thai-cua-entity-thuc-the-trong-hibernate-va-jpa
+
+Persistence context quản lí entity
+1. Trạng thái new (Transient): entity mới đc khởi tạo
+2. Persistent (Bến bỉ): khi data được ánh xạ vào DB và quản lý bởi Persistence Context
+Thay đổi được ghi nhận vào db trong lện session Flush.
+Nếu đối tượng ở trạng thái này, ko cần gọi save hay update khi commit transaction
+flush sẽ cập nhật xuông DB
+3. Detached (ta)
+
+
+============ JPA===============
+Java persistence: cách quản lý dữ liệu trong ứng dụng, ánh xạ table trong DB
+sang mối quan hệ của object
+- Sử dụng EntityManager (interface) để tương tác với các entity
+
+============ Hiberbnate=========
+- Giúp thao tác với DB thông qua các đối tượng, impliment JPA
+- Sử dụng session để tương tác entity
+
+============= So sánh JPA và JDBC ============
+- JDBC (DB connectivity): dùng để tương tác với DB (config trong file application)
+- JDBC: hỗ trợ viết sql command để tương tác, đọc dữ liệu từ BD, cần viết cả
+câu query thay vì dùng anotaion như trong JPA
+- JDBC: cần viết code trong try catch block vì JDBC throw exceptions
+
+- JPA: hỗ trợ cấu trúc hóa đối tượng thành bảng trong DB, gần với ngôn ngữ
+hướng đối tượng, hạn chế việc phải check lại liên tục sự thay đổi giữa object trên BE
+và DB
+
+
+=========== annotation in JPA: oneToMany, OneToOne, ManyToOne, ManyToMany======
+Link
+https://dev.to/jhonifaber/hibernate-onetoone-onetomany-manytoone-and-manytomany-8ba
+
+- @OneToOne: @JoinCollumn sẽ quyết định việc entity hiện tại chứa Foreing key của 
+entity khác
+
+
+============= Lấy thông tin ID user ============
+Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+================ Spring validation ============
+- Dùng để validate input của người dùng
+
+
+=========== @Notblank, @NotNull, @NotEmpty =============
+- Các annotation này không ảnh hưởng đến constrant DB
+- Nếu muốn update trong DB, thêm nullable = false vào @Collumn(nullable = false)
+hoặc @JoinCollumn()
+- @NotNull: field ko thể null, có thể empty ("")
+- @NotEmpty: field không thể null, và ko thể empty, thêm @Size(min = 2, max = 10)
+- @NotBlank =  @NotEmpty và dữ liệu được trim
+
+
+==============================================================
+============= 1. Facade Java: (1 kiểu design pattern) ================
+- Trong một hệ thống có nhiều hệ thống con, mỗi hệ thống con đảm nhận
+một công việc khác nhau, khi đó Facade giống như 1 lớp bên ngoài giao 
+tiếp với client, có chức năng cung cấp dịch vụ mà hệ thống con đó cung cấp.
+VD: Hệ thống cửa hàng phụ vụ nhiều yêu cầu: đặt hàng, thanh toán, dịch vu
+riêng -> Facade là nhân viên tổng đài phục cụ, làm nhiệm vụ giao tiếp với
+khách hàng, cung cấp và phục vụ cho lựa chọn của họ.
+
+======================================================
+============ 2. Các kiểu design patterns ==============
+https://tuan200tokyo.blogspot.com/2022/10/blog10-gioi-thieu-ve-javascript-design.html
+https://www.digitalocean.com/community/tutorials/java-design-patterns-example-tutorial
+Các kiểu design pattern trong java:
+https://stackjava.com/category/design-pattern
+
+- Singleton Patterns: một lớp chỉ có 1 instance duy nhất, bất biến
+- Adapter: tạo một lớp trung gian để giao tiếp với interface hoặc class khác
+- Factory Method Pattern: các đối tượng có thể sửa đổi
+https://viblo.asia/p/factory-method-pattern-trong-java-4dbZNoNQlYM
+	+ Tạo 1 interface, abstract class sau đó tạo 1 class để implment
+	sau đó trạo Factory class bên trong đó có phương thức 
+	khởi tạo Object chúng ta cần -> xFactory.getX(), object được lấy 
+       	phụ thuộc vào đầu vào (type)
+VD: factory 
+public interface Phone{
+	trong đây có list các thuộc tính
+}
+public class Iphone implement Phone { }
+public class SamsungPhone implement Phone { }
+public class PhoneFactory {
+	public Phone getPhone(Phone_Type)
+}
+
+- Abstract Factory Pattern:  chứa nhiều factory class bên trong
+- Provider:  tạo 1 interface và nhiều provider implement interface đó, 
+mỗi class riêng sẽ thực hiện chức năng riêng
+
+- Builder pattern: xử lý tồn đọng với Factory và abstract factory nếu Object có
+nhiều thuộc tính, builder pattern sẽ cung cấp cách xây dựng đối tượng từng
+bước một và cung cấp phương thức trả về đối tượng đó. Thường chứa method 
+build tạo ra đối tượng với nhiều thuộc tính
+
+- Composite pattern (structural pattern)
+(Tương tác với các đối tượng tương tự nhau giống  như các đối 
+tượng đơn trong cùng 1 list)
+
+
+- dependency injection : là 1 phương pháp thực thi. Factory patterns là 1 phương pháp thực thi DI
+
+=============================================
+================== 3. JWT ==================
+- Server ký bằng khóa riêng của server, gửi jwt lại cho user đính kèm 1 request
+-> mục đích là để xác thực user, ko có khả năng bảo mật thông tin người dùng
+
+===========================================================
+======================  4. IOC  ==============================
+            loadingData.loadingOfficeRoot
+
+
+
+===========================================================
+====================== Java OOP==================
+- Upcasting
+Parent p = (Parent) new Child();
+-> rarely used
+
+- Không thể downcast trực tiếp
+Child child = new Parrent();  // -> compile error
+
+- Downcast :
+Parent a = new Child();
+Child b = (Child) a;
+
+
+==================== Custome mapping using Mapperfacade Orika =======================
+
+
+Học từ document spring 2.3.4 
+https://docs.spring.io/spring-boot/docs/2.3.4.RELEASE/reference/htmlsingle/#using-boot
+==== starter dependency ======
+- Chứa 1 set các dependency trong application
+VD  spring-boot-starter-data-jpa: dùng Spring và JPA access vào database
+
+===== Tên packages ============
+- packages name, tên packages: dùng để xác định file jar cần chạy nếu sử dụng
+các anotaion.  Nếu không, spring boot không thể xác định được file jar cần chạy
+
+@SpringBootApplication = @EnableAutoConfiguration + @ComponentScan + @Configuration
+@Configuration giúp class có thể đăng ký thêm các beans 
+Nếu sử dụng @ComponentScan, tất cả các component với annotation @Component, @Service , @Repository ...
+sẽ tự động được đăng ký
+
+- Dùng @Import để import các configuration classes
+- Hoặc có thể dùng @ComponentScan để tự động pick up tất cả các component
+- @SpringBootApplication(exclude={DataSourceAutoConfiguration.class}) : dùng để disable auto-configuration 
+
+2. Các tính năng spring boot
+- Lazy initialization: bean chỉ được khởi tạo nếu có http request thay vì được khởi tạo lúc ứng
+dụng khởi chạy
+
+
+
+
+
+
+
+
