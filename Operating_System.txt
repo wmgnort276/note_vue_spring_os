@@ -31,3 +31,15 @@ trên một đường (called lane)
 - CPU giao tiếp với thiết vị bên ngoài bằng PCIe (Peripheral Component Interconnect Express) bus
 - Giao tiếp với các thiết bị khác qua Hub thông qua bus DMI (Direct Media Interface)
 - Hub kết nối tất cả các thiết bị dùng USB
+
+
+
+1.4 Các hệ điều hành phổ biến
+
+1.4.8 Real-time OS
+- Dùng trong hệ thống tự động: vd dây truyền sản xuất, cần có hoạt động xử lý đúng thời gian trong dây truyền
+1.4.9 Smart card OS
+- OS nhỏ nhất, ví dụ trong thẻ credeit card
+
+1.5 OPERATION SYSTEM CONCEPTS
+    1. Process: chương trình đang được thực thi

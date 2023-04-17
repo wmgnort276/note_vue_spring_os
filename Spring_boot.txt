@@ -4,7 +4,7 @@ Nam276201@
 
 Shift + enter : create new line at middle of current line
 alt + insert : insert getter, setter, toString method
-
+sout: short cut for System.out.println()
 @JsonIgnore: đánh dấu trường là ko cần thiết (ví dụ khi map object)
 
 ============= 
@@ -205,6 +205,105 @@ sẽ tự động được đăng ký
 dụng khởi chạy
 
 
+==== Toán tử :: trong stream list ==========
+Toán tử :: : method reference operator
+Tương đương lambda expression
+
+
+=========== Java basic ============
+I. Java String
+https://www.javatpoint.com/java-string
+- String, StringBuffer, StringBuilder: đều tạo string
+1. String
+	1.1 String: (immutable - bất biến) tạo đối tượng không thay đổi, khi sử dụng các phương thức làm thay đổi đối tượng, 1 instance mới
+	sẽ được tạo ra. Trừ trường hợp khởi tạo new String("string"), khi đó JVM sẽ khởi tạo đối tượng riêng cho String này
+	1.2 String là object, nếu tạo mới 1 String đã tồn tại trc đó, JVM sẽ chỉ khởi tạo reference đến String đó. String được chứa trong vùng 
+	nhớ đặc biệt (string constant pool)
+	1.3 VD
+		String s1 = "hello";
+		String s2 = new String("Hello"); => object được tạo ngoài pool -> s1 != s3
+    1.4 Khi String dùng method concat, thực thế là đang sử dụng StringBuilder().append() để nối xâu
+	1.5 String.format("%s%s", s1, s2);
+	1.6 Khi so sánh string, giá trị của chuỗi được so sánh
+
+2. StringBuffer
+- Tạo ra String có thể thay đổi (mutable)
+- Khi so sánh, reference được so sánh với nhau
+- Khôn overide equals() method của String
+- Dùng Heap memory lưu string
+3. StringBuilder 
+- Tạo ra String có thể thay đổi (mutable) (khác với StringBuffer vì StringBuilder là non-synchronize)
+
+
+4. So sánh String
+	4.1 equals: so sánh content của string
+	4.2 == operator: so sánh sử dụng tham chiếu của String
+	4.3 compare to trả về 1 giá trị: == trả về 0, lớn hớn trả về 1, nhỏ hơn trả về -1
+5. Inner class
+https://www.javatpoint.com/member-inner-class
+5.1 Inner class là con của nested class. Nếu class bên trong là non-static nó sẽ được coi là inner-class
+5.2 
+
+
+6. Exception Handling 
+- Là object throw lúc runtime, handling exceptions giúp các đoạn code phía sau khi xảy ra exceptions vẫ hoạt động
+- Check exceptions: được checked ở compile-time. VD: IOException, SQLExceptions
+- Unchecked  exceptions: các exceptions ở RuntimeException
+
+Throwable 
+		Error
+				StackOverflowError
+				VirtualMachineError
+				OutOfMemoryError
+		Exception
+				IOException
+				SQLExceptions
+				CLassNotFoundException
+				RuntimeException
+						ArithmeticException
+						NullPointerException
+						NumberFormatException
+						IndexOutOfBoundException
+								ArrayIndexOutOfBoundsException
+								StringIndexOutOfBoundsException
+
+- Với Unchecked Exception: dùng trong function, block of code  (có thể propagate)
+- Với Checked Exception: cần throws trong định nghĩa method (method signature), chỉ có thể được propagate khi dùng với throws 
+trong method signature
+VD: public void method() throws Exception {
+
+}
+Khi method định nghĩa bằng từ khóa throws, khi gọi method cần catch exception đã định nghĩa hoặc thêm signature của exception
+ở method bên ngoài gọi đến method đó
+- Có thể custome Exception, super message của class exceptions cha
+
+- throw vs throws: 
+https://www.javatpoint.com/difference-between-throw-and-throws-in-java
+throw: tại 1 thời điểm chỉ được throw 1 exception
+throws: có thể throws nhiều exception tại 1 thời điểm, có thể dùng với cả checked và Unchecked exception
+
+
+- method overiding sử dụng exception handling
+	- Nếu method ở class cha ko định nghĩa exception, method overide ở class con cũng ko thể định nghĩa checked exception
+	- Nếu method ở class cha ko định nghĩa exception, method overide ở class có thể định nghĩa unchecked exception
+	- Nếu method ở class cha có định nghĩa exception, method overide có thể khai báo exception nhỏ hơn hoặc bằng exception đó, hoặc ko nhưng ko thể khai
+	báo exception cha (parent cuae exception định nghĩa ở method của class cha)
+
+
+7. Java I/O 
+- Dùng package java.io
+- stream là 1 chuỗi dữ liệu (sequence of data)
+- System.out: ouput stream tiêu chuẩn
+- OuputStream: dùng đẻ ghi dữ liệu đến đích (file, thiết bị ngoại vi, socket ...)
+	- Các method trong OuputStream: write (ghi byte / array of bytes), flush (flust ouput stream), close ...
+	- FileOutputStream: ghi file, sử dụng bytes. Ghi string cần chuyển sang bytes : s.getBytes() (return byte[])
+
+
+- InputStream: đọc data từ file... 
+	- Các method: read (đọc từng byte, trả về -1 nếu đọc đến cuối file), available (trả về số lượng byte có
+	 để đọc từ input stream hiện tại)
+
+=========== Paging =================
 
 
 
