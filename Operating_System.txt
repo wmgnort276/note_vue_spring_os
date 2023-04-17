@@ -1,5 +1,63 @@
 - OS from Tanenbaum text book
-I. I/O - thiết bị vào ra
+
+- instruction : lệnh
+- abundance: sự phong phú
+
+Nguyên lý hệ điều hành
+- Có 2 nguyên lý hoạt động trong máy tính
+kernel mode: hệ điều hành (quyền truy cậ mọi tài nguyên hardware, I/O devices..)
+user mode : chương trình phần mềm khác
+1. Khái niệm hệ điều hành: 
+- P34
+Cung cấp người lập trình hệ thống một thệ thống tài nguyên
+trừu tượng, thay vì một loạt các đối tượng phần cứng, đồng 
+thời quản lý tài nguyên phần cứng đó.
+
+1.1 
+xếp theo mức độ trừu tượng:
+ổ cứng --> disk driver --> file
+File ở mức độ trừu tượng cao hơn, cung cấp khả năng giao tiếp
+với ổ cứng cho ứng dụng và người lập trình, thay vì việc phải cần
+hiểu rõ về hoạt động của ổ cứng
+
+1.3.1 Processors 
+- CPU lấy câu lệnh từ bộ nhớ, giải mã và thực thi (fetching - decoding - executing )
+- Truy cập vào bộ nhớ là việc tốn kém so với việc thực thi câu lệnh
+
+- Vì vậy cần thanh ghi (regsiter) để lưu dữ liệu
+- Thanh ghi vs RAM: thanh ghi lưu data , RAM lưu cả câu lệnh và data
+
+- Các thanh ghi: program counter, stack pointer, PSW (program status word)
+Win 32 bit: thanh ghi 32 * 32 bit, win 64; thanh ghhi 64 * 64 bit
+
+- PSW thường chứa dữ liệu kiểm soát giữa việc thực thi câu lệnh ở
+kernel mode và user mode (dữ liệu if/else chuyển đổi việc thực thi câu lệnh
+ở kernel hay user mod)
+- System call : thủ tục đặc biệt chuyển từ mode user sang mode kernal (TRAP)
+- Đa luồng: (multithreading) cung cấ khả năng chuyển ngữ cảnh từ thread khác
+nhau với tốc độ cao vì CPU lưu giữ được trạng thái của nhiều luông cùng 
+một lúc, tuy nhiên vẫn chỉ có 1 process đang hoạt động 
+GPU: có hàng nghìn core, xử lý rất tốt các tác vụ song song, ko phù
+hợp với các tác vụ lần lượt
+
+1.3.2 Bộ nhớ
+Thanh ghi -> Cache --> Main memory --> Disk
+Flash disk có tốc độ ở giữa so với RAM và ROM, tuy nhiên nếu dữ liệu bị xóa nhiều 
+lần bộ nhớ sẽ bị hao mòn
+Thanh ghi : 32* 32 bit với win 32, 64 * 64 bit với win 64
+Cache sử dụng cache line (cache hit vs cache miss)
+
+1.3.3 Disks
+Dùng bộ nhớ ảo: (virtual memory) : cho chương trình chạy trên Disk và
+dùng RAM như bộ nhớ cache (thay vì chương trình chỉ chạy trên ram)
+--> không gian bộ nhớ lớn hơn, tuy nhiên yêu cầu cần phải mapping địa 
+chỉ đã được located trong RAM. Công việc mapping này được xử lý bởi MMU 
+(Memory Management Unit)
+
+1.3.4 I/O Devices
+- Gồm 2 phần: controller và device
+- Controller là những con chip, nhận yêu cầu từ OS và điều khiển devices
+- Controller cung cấp 1 tầng trừu tượng hóa để giao tiếp với device hiệu quả hơn
 1. Tiêu chuẩn của disk: SATA tiêu chuẩn disk của IBM (serial advanced technology attachment)
 2. Device -> Controller -> Driver (dùng để giao tiếp với controller của device) 
 3. Driver thường sẽ được đặt vào OS và chạy ở kernel mode
@@ -10,8 +68,9 @@ I. I/O - thiết bị vào ra
         mà không cần reboot lại hệ thống)
 5. Mỗi controller có những thanh ghi để OS giao tiếp với nó. Ví dụ disk có các thanh ghi để lưu trữ: địa chỉ disk, 
 địa chỉ bộ nhớ, số lượng sector
-Trong nhiều hệ thống, thanh ghi thiết bị (device registers) được ánh xạ đến không gian để chỉ của OS nên nó được đọc và ghi như 1 
-địa chỉ thông thường. Ở những thiết hệ thống khác, thanh ghi thiết bị được đặt vào I/O port space và có địa chỉ cổng riêng.
+Trong nhiều hệ thống, thanh ghi thiết bị (device registers) được ánh xạ đến không gian để chỉ của OS nên
+nó được đọc và ghi như 1  địa chỉ thông thường. Ở những thiết hệ thống khác,
+ thanh ghi thiết bị được đặt vào I/O port space và có địa chỉ cổng riêng.
 5. Có 3 cách gọi Input vs Output 
         5.1 User gọi lời gọi hệ thống, lời gọi được chuyển thành lời gọi thủ tục (procedure call) đến driver phù hợp.
             Driver sẽ start I/O và giám sát thiết bị đã hoạt động hoàn thành hay chưa (busy waiting: vì CPU sẽ phải đợi đến thi 
@@ -22,7 +81,11 @@ Trong nhiều hệ thống, thanh ghi thiết bị (device registers) được �
             Đoạn cuối về interrupt chưa hiểu lắm
         5.3 Sử dụng phần cứng đặc biệt: DMA (Direact Memory Access)
 
-II. Buses
+1.3.5 Buses
+- Xem thêm phần ghi chú trên công ty ...
+SCSI (Small Computer System Interface): bus hiệu năng cao, dùng cho disk tốc độ cao
+máy quét...
+- plug and play (cắm là chạy): tự động cung cấp interupts level, địa chỉ I/O, 
 - Có nhiều bus trong hệ thống: cache, memory, PCIe..., bus chính trong máy tính là PCIe
 PCIe sử dụng serial bus architecture (thay vì parallel bus architexture) -> dữ liệu gửi hết 
 trên một đường (called lane)
@@ -32,14 +95,29 @@ trên một đường (called lane)
 - Giao tiếp với các thiết bị khác qua Hub thông qua bus DMI (Direct Media Interface)
 - Hub kết nối tất cả các thiết bị dùng USB
 
+1.3.6 Booting PC 
+- Trong PC có parentboard, trên đó chứa BIOS (basic inout ouput system)
+BIOS chứa low-level I/O software, thủ tục đọc bàn phìm, ghi màn hình ...
+BIOS chứa ở flash RAM nên ko bị mất khi máy tính tắt.
+Khi PC được booted, BIOS sẽ check bao nhiêu RAM đc cài đặt, các thiết bị khác được
+phản hồi đúng chưa. bằng cách scan PCIe. Sau khi scna, BIOS kiểm tra các device
+đã có đầy đủ drive chưa, nếu chưa có sẽ yêu cầu cài đặt 
+
+1.4 Các hệ điều hành
+1.1.4 Mainframe 
+Máy tính cỡ lớn
+3 chức năng chính: xử lý hàng loạt, xử lý giao dịch, time sharing
+Đang được thay thế bởi các hệ điều hành dạng UNIX như LINUX
 
 
-1.4 Các hệ điều hành phổ biến
 
-1.4.8 Real-time OS
-- Dùng trong hệ thống tự động: vd dây truyền sản xuất, cần có hoạt động xử lý đúng thời gian trong dây truyền
-1.4.9 Smart card OS
-- OS nhỏ nhất, ví dụ trong thẻ credeit card
+1.5 
+1.5.1 Processes (Tiến trình)
+- Là chương trình đang được thực thi
+- Gắn với mỗi tiến trình là 
+    + Không gian địa chỉ
+    + Tài nguyên khác (file, đồng hồ, thanh ghi, tiến trình khác)
+-> giống như 1 container chứa tất cả thông tin cần thiết để chạy chương trình
 
-1.5 OPERATION SYSTEM CONCEPTS
-    1. Process: chương trình đang được thực thi
+- Trường hợp process bị tạm dừng (suspend), thông tin về process sẽ được lưu lại trong process table
+
