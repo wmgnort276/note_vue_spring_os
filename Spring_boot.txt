@@ -295,9 +295,20 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 - stream là 1 chuỗi dữ liệu (sequence of data)
 - System.out: ouput stream tiêu chuẩn
 - OuputStream: dùng đẻ ghi dữ liệu đến đích (file, thiết bị ngoại vi, socket ...)
+
+OutputStream
+	FileOutputStream
+	ByteArrayOutputStream
+	FilterOutputStream
+		DataOutputStream
+		BufferedOutputStream
+		PrintStream
+	PipedOutputStream
+	ObjectOutputStream
+
 	- Các method trong OuputStream: write (ghi byte / array of bytes), flush (flust ouput stream), close ...
 	- FileOutputStream: ghi file, sử dụng bytes. Ghi string cần chuyển sang bytes : s.getBytes() (return byte[])
-
+	- BufferOutputStream: dùng buffer để lưu output stream. Cú pháp: 
 
 - InputStream: đọc data từ file... 
 	- Các method: read (đọc từng byte, trả về -1 nếu đọc đến cuối file), available (trả về số lượng byte có

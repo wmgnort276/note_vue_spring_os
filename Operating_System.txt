@@ -113,7 +113,7 @@ Máy tính cỡ lớn
 
 1.5 
 1.5.1 Processes (Tiến trình)
-- Là chương trình đang được thực thi
+- Là chương trình đang được thực thi (program in execution)
 - Gắn với mỗi tiến trình là 
     + Không gian địa chỉ
     + Tài nguyên khác (file, đồng hồ, thanh ghi, tiến trình khác)
@@ -121,3 +121,4 @@ Máy tính cỡ lớn
 
 - Trường hợp process bị tạm dừng (suspend), thông tin về process sẽ được lưu lại trong process table
 
+1.5.2 Address space
