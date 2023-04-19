@@ -253,7 +253,7 @@ các thuộc tính này tự động được thêm vào component con mà khôn
 cả 2 sự kiện đều được gọi
 
 
-====== Slots =========
+============== Slots ===============
 - dùng để truyền template content xuống component con
 - slot outlet: nới chứa template truyền từ component cha
 - fallback: dự phòng (dùng nếu component cha không truyền content cho xuống component con)
@@ -265,7 +265,7 @@ VD v-slot:header hoặc #header
 - Slot có thể truy cập vào thuộc tính của component con
 VD v-slot:header="slotProps" hoặc #header="slotProps"
 
-==== provide / inject ====
+============ provide / inject ==========
 - Dùng cho việc truyền props từ component cách xa đến component hiện tại
 - Dùng trong component / hoặc dùng trong app - level 
 app.provide('key', 'value')
@@ -279,12 +279,26 @@ cập nhật ỏ component con)
 ==== Store in vue ========== 
 
 
+=========== event javascript, HTML ==============
+- Event listener: onclick, onblur -> dùng với thẻ html 
+    VD: <butotn onclick="eventHandler()" />
 
+- Envent handler: function javascript
 
+- Event: click, blur ...
+    VD: button.addEventListener("click", eventHandler)
+
+- Mỗi event khi xảy ra thuộc về 1 object
+    Event (Interface cha)
+
+===================== Event Bus ==================
+https://kouty79.medium.com/a-journey-from-the-eventbus-pattern-to-vuex-architecture-e06152df143f
 =================================== Routing VueJS ============================================
 
-
-
+// i18n
+https://github.com/PhraseApp-Blog/vue-i18n-demo/tree/master/src/locales
+https://phrase.com/blog/posts/vue-2-localization/
++-
 
 
 

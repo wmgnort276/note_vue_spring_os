@@ -120,5 +120,8 @@ Máy tính cỡ lớn
 -> giống như 1 container chứa tất cả thông tin cần thiết để chạy chương trình
 
 - Trường hợp process bị tạm dừng (suspend), thông tin về process sẽ được lưu lại trong process table
+- Mỗi process được khởi chạy sẽ có UID của user kích hoạt, giá trị UID được gán bởi system administrator.
+UID trong UNIX được gọi là supperuser, windows là Administrator
+
 
 1.5.2 Address space
