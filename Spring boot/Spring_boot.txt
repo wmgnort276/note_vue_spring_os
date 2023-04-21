@@ -297,13 +297,22 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 - OuputStream: dùng đẻ ghi dữ liệu đến đích (file, thiết bị ngoại vi, socket ...)
 	- Các method trong OuputStream: write (ghi byte / array of bytes), flush (flust ouput stream), close ...
 	- FileOutputStream: ghi file, sử dụng bytes. Ghi string cần chuyển sang bytes : s.getBytes() (return byte[])
-	- BufferedOutputStream : ghi data ra buffer thay vì ghi trực tiếp ra stream
+	- BufferedOutputStream : ghi data ra buffer thay vì ghi trực tiếp ra stream. Thông thường stream đọc / ghi từng byte, tuy nhiên 
+	với buffer, dữ liệu được đọc / ghi trước vào buffer và available cho những lần gọi tiếp theo. Trong buffer có phương thức mark() để dánh dấu
+	vị trí con trỏ trong buffer, và phương thức reset() để quay trở về vị trí đã được đánh dấu
+	- ByteArrayOutputStream : dùng để ghi dữ liệu ra một byte array tạm thời và để sử dụng sau đó (có thể ghi ra nhiều file dữ liệu khác nhau)
+	- flush() giúp ghi ngay lập tức dữ liệu trong buffer, điều này làm giảm tốc độ ghi dữ liệu tuy nhiên nó lại đảm bảo được
+	việc ghi dữ liệu diễn ra ngay lập tức thay vì phải đợi đến khi buffer đầy hoặc phương thức close() được gọi.
 
 - InputStream: đọc data từ file... 
 	- Các method: read (đọc từng byte, trả về -1 nếu đọc đến cuối file), available (trả về số lượng byte có
 	 để đọc từ input stream hiện tại)
+	- SequenceInputStream : đọc input từ nhiều stream khác nhau theo thứ tự
 
-	- Class: FileInputStream extends InputStream
+
+8. Static  
+Là thành phần riêng của class (được khởi tạo một lần tại 1 nơi trong bộ nhớ khi class được load)
+state được khởi tạo ở thời điểm runtime thay vì compile
 
 =========== @Accessors =============
 -  tùy biến sửu dụng getter và setter trong lombok
@@ -318,10 +327,4 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 - File .groovy, .xml sẽ tự động được Spring Boot load vào file cấu hình mặc định
 - Sử dụng Slf4j với anotaiton sẽ sử dụng log mặc định
 
-=========== Paging =================
-
-
-
-
-
-
+=========== Paging ===========

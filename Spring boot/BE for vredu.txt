@@ -36,4 +36,6 @@ Bổ sung điều kiện
     course 2: 40209 - cat 1
     course 4: 40201 - cat 2
     kaopiz-test:  40211 - cat 1
-    course 5: 40202 - cat 1
+    course 5: 40202 - cat
+
+    
