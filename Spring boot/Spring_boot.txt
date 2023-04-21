@@ -297,11 +297,26 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 - OuputStream: dùng đẻ ghi dữ liệu đến đích (file, thiết bị ngoại vi, socket ...)
 	- Các method trong OuputStream: write (ghi byte / array of bytes), flush (flust ouput stream), close ...
 	- FileOutputStream: ghi file, sử dụng bytes. Ghi string cần chuyển sang bytes : s.getBytes() (return byte[])
-
+	- BufferedOutputStream : ghi data ra buffer thay vì ghi trực tiếp ra stream
 
 - InputStream: đọc data từ file... 
 	- Các method: read (đọc từng byte, trả về -1 nếu đọc đến cuối file), available (trả về số lượng byte có
 	 để đọc từ input stream hiện tại)
+
+	- Class: FileInputStream extends InputStream
+
+=========== @Accessors =============
+-  tùy biến sửu dụng getter và setter trong lombok
+1. fluent = true -> loại bỏ tiền tố get và set trong getter và setter (vd: user.userName("NamVN") -- getter).
+2. chain = true -> setter method trả về this thay vì void, sử dụng giống builder pattern.
+3. frefix = {"s", "b"} : loại bỏ 1 số prefix gây khó hiểu trong thuộc tính.
+
+
+============= Logging ==============
+- Logging dùng để truy vết các thao tác sử dụng trên ứng dụng
+
+- File .groovy, .xml sẽ tự động được Spring Boot load vào file cấu hình mặc định
+- Sử dụng Slf4j với anotaiton sẽ sử dụng log mặc định
 
 =========== Paging =================
 
