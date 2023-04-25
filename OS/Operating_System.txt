@@ -125,6 +125,3 @@ UID trong UNIX được gọi là supperuser, windows là Administrator
 
 
 
-
-
-

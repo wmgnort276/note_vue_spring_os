@@ -327,4 +327,14 @@ state được khởi tạo ở thời điểm runtime thay vì compile
 - File .groovy, .xml sẽ tự động được Spring Boot load vào file cấu hình mặc định
 - Sử dụng Slf4j với anotaiton sẽ sử dụng log mặc định
 
+
+======== getById vs findById ==========
+- getById: trả về tham chiếu (reference) đến entity đó (sử dụng khi việc truy cập vào các thuộc tính của đối tượng là không cần thiết)
+getById(): là lazy operation, không hề động đến DB
+getById(): gọi đến phương thức EntityManager.getReference()
+Sử dụng trong trường hợp muốn gán entity hiện tại cho 1 entity khác
+- findById: trả về 1 entity
+
+- Optional<>: object trả về sẽ không thể dùng với mappping, setting method , serialization
+- để trả về Object thường, dùng phương thức .get()
 =========== Paging ===========
