@@ -466,19 +466,46 @@ const navigationResult = await router.push('/my-profile')
 
 
 ================= Vuex =======================
+- Store trong vuex là reactive, khi 1 component sử dụng state được chứa ở store, khi có thay đổi trong store
+state cũng sẽ được cập nhật
+- Mỗi sự thay đổi sẽ phải sử dụng mutations, từ đó đảm bảo việc record lại các thay đổi
 
 
+1. State
+1.1 Nên khai báo các giá trị state này trong computed của mỗi component để những thay đổi sẽ được cập nhật đồng bộ
+trên component (cách này làm code dài dòng nếu có nhiều computed)
 
+1.2 Dùng mapState: mapState trả về 1 object nên có thể spread với computed của component
+- Dùng array
+    computed: mapState([
+        'count'
+    ])
+- Dùng object
+    computed: mapState({
+        count: state => state.count
+    })
 
+2. getters
+Tính giá trị biểu thức phức tạp & được sử dụng bởi nhiều component 
+Trong getter ngoài nhận giá trị tham số state của vuex, ta còn có thể truyền vào một tham số khác để sử dụng 
+ở component gọi đến getters đó. Khi đó trong arrow fnction sẽ sử dụng 2 lần dấu => 
 
+3. mutations
+Khai báo mutations gồm có 2 phần 
+mutations: {
+    increment(state) { // increment: type, callback bên trong là handler
+      state.count++;
+    },
+  },
 
-
-
-
-
-
-
-
+- gọi đến mutations: this.$store.commit("mutations type")
+- Sử dụng file mutations type tách biệt thành module
+// mutation-types.js
+export const SOME_MUTATION = 'SOME_MUTATION'
+[SOME_MUTATION] (state) {
+  // mutate state
+}
+- Tương tự state và getter, ta cũng có thể sử dụng ...mapMuatations([]) trong method của component
 
 
 
