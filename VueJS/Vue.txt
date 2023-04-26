@@ -506,12 +506,15 @@ export const SOME_MUTATION = 'SOME_MUTATION'
   // mutate state
 }
 - Tương tự state và getter, ta cũng có thể sử dụng ...mapMuatations([]) trong method của component
+Tuy nhiên trong mapMutations, ta chỉ định nghĩa tên mutations được gọi, nếu mutations được khai báo có
+tham số truyền vào, cần sử dụng phương thức khác trong method của component gọi đến mutation đó
+và truyền tham số tương ứng
 
 
-
-
-
-
+4. actions
+- Dùng để commit mutations thay vì mutate state
+- actions chứa những asynchronous operations
+- Param đầu vào là biến context
 
 
 
