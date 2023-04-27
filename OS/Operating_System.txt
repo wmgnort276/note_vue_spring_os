@@ -113,7 +113,7 @@ Máy tính cỡ lớn
 
 1.5 
 1.5.1 Processes (Tiến trình)
-- Là chương trình đang được thực thi (program in execution)
+- Là chương trình đang được thực thi
 - Gắn với mỗi tiến trình là 
     + Không gian địa chỉ
     + Tài nguyên khác (file, đồng hồ, thanh ghi, tiến trình khác)
@@ -124,4 +124,6 @@ Máy tính cỡ lớn
 UID trong UNIX được gọi là supperuser, windows là Administrator
 
 
-1.5.2 Address space
+1.6 File 
+- Đường dẫn tuyệt đối: đường dẫn đi từ nút gốc
+- Đường dẫn tương đối: khi đang đứng ở 1 folder chỉ cần cung cấp đường dẫn tương đối của 1 địa chỉ

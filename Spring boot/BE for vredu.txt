@@ -1,0 +1,41 @@
+select * from (select max(v.id) as id, max(v.created_at) as createdAt,max(v.last_view_at) as lastViewAt ,COALESCE(max(v.vrViewCount),0) as vrViewCount,
+ max(v.vr_last_view_at) as vrLastViewAt,s.office_id as officeId,s.id as studentId,s.code as studentCode,  
+            max(v.manual_last_view_at) as manualLastViewAt,COALESCE(max(v.manual_view_count),0) as manualViewCount,  max(c.manual_video_number) as manualVideoNumber,
+            max(c.manual_video_name) as manualVideoName,s.name as studentName,max(a.answer) as answer,o.name as officeName,o.code as officeCode,   
+            max(c.video_number) as videoNumber,max(c.video_name) as videoName, max(a.correct) as correct, max(q.id) as questionId, c.id as courseId ,case when (max(v.vr_view_count) > 0 and (max(a.correct) > 0 or max(q.answer) is null)) then 'COMPLETE'  
+            when (max(v.vr_view_count) > 0 and max(a.correct) = 0) then 'INCORRECT_ANSWER' else 'NOT_ATTEND' end as attendStatus ,case when  (max(v.manual_view_count) > 0 ) then 'VIEW_COMPLETE' else 'NOT_VIEWED' end as viewingStatus,  
+            if(max(v.vr_last_view_at) > date_add(date_add(date_add(curdate(),interval -6 month),interval 23 hour),interval 59 minute),true,false)  as vrIsSixMonthAgo, 
+            if(max(v.manual_last_view_at) > date_add(date_add(date_add(curdate(),interval -6 month),interval 23 hour),interval 59 minute),true,false)  as manualIsSixMonthAgo 
+            from courses c left join (select *,COALESCE(vr_view_count,0) as vrViewCount from view_logs where student_id = 40299) v on c.id= v.course_id  left join students s on s.id = v.student_id  
+            left join questions q on q.course_id = c.id  left join (select  max(correct) as correct,question_id,max(answer) as answer from answers where student_id = 40299 group by question_id ) a on a.question_id = q.id  
+            left join offices o on o.id = s.office_id group by c.id) c 
+
+
+
+hàm COALESCE : trả về giá trị khác null đầu tiên trong danh sách
+max(): 
+
+case when ... when ... else ...
+end as new_column 
+--> trả về cột mới trong trường hợp data query thỏa moãn 1 điều kiện trong biểu thức when / else
+
+
+Hiện tại
+ student: 40299
+nam: 40604
+- Chọn tất cả course  
+    1. join với bảng view_logs lấy theo student_id, đk join course_id (lấy được course đaz được xem bới student đang filter)
+    2. join bảng student, dk join : student_id (lấy toàn bộ thông tin student đang filter)
+Bổ sung điều kiện
+    1. contract_course: tìm contract của student-> tìm course id được đăng ký với contract đó
+    2. đk về flag (flag thường  và manual flag) --> cả 2 loại video đều ko null mới hiển thị nên màn hình
+        vd manual05: đang ko public cả 2 trường nên không có dữ liệu được trả về
+
+    3. Student có category chứa video được xem: show course có id nằm trong bảng cat_course có cat_id = cat_id của student đó
+    - Trường hợp cat_id = null, sẽ hiển thị hết
+    course 2: 40209 - cat 1
+    course 4: 40201 - cat 2
+    kaopiz-test:  40211 - cat 1
+    course 5: 40202 - cat
+
+    

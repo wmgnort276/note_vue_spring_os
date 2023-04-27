@@ -1,0 +1,80 @@
+SELECT  
+                * 
+            FROM 
+                (SELECT  
+                    MAX(v.id) AS id, 
+                        MAX(v.created_at) AS createdAt, 
+                        MAX(v.last_view_at) AS lastViewAt, 
+                        COALESCE(MAX(v.vrViewCount), 0) AS vrViewCount, 
+                        MAX(v.vr_last_view_at) AS vrLastViewAt, 
+                        s.office_id AS officeId, 
+                        s.id AS studentId, 
+                        s.code AS studentCode, 
+                        MAX(v.manual_last_view_at) AS manualLastViewAt, 
+                        COALESCE(MAX(v.manual_view_count), 0) AS manualViewCount, 
+                        s.name AS studentName, 
+                        s.contract_id AS contract_id, 
+                        MAX(a.answer) AS answer, 
+                        o.name AS officeName, 
+                        o.code AS officeCode, 
+                        MAX(a.correct) AS correct, 
+                        MAX(q.id) AS questionId, 
+                        c.id AS courseId, 
+                        c.flag AS flag, 
+                        c.manual_flag AS manualFlag, 
+                        CASE 
+                            WHEN 
+                                (MAX(v.vr_view_count) > 0 
+                                    AND (MAX(a.correct) > 0 
+                                    OR MAX(q.answer) IS NULL)) 
+                            THEN 
+                                'COMPLETE' 
+                            WHEN 
+                                (MAX(v.vr_view_count) > 0 
+                                    AND MAX(a.correct) = 0) 
+                            THEN 
+                                'INCORRECT_ANSWER' 
+                            ELSE 'NOT_ATTEND' 
+                        END AS attendStatus, 
+                        CASE 
+                            WHEN (MAX(v.manual_view_count) > 0) THEN 'VIEW_COMPLETE' 
+                            ELSE 'NOT_VIEWED' 
+                        END AS viewingStatus, 
+                        IF(MAX(v.vr_last_view_at) > DATE_ADD(DATE_ADD(DATE_ADD(CURDATE(), INTERVAL - 6 MONTH), INTERVAL 23 HOUR), INTERVAL 59 MINUTE), TRUE, FALSE) AS vrIsSixMonthAgo, 
+                        IF(MAX(v.manual_last_view_at) > DATE_ADD(DATE_ADD(DATE_ADD(CURDATE(), INTERVAL - 6 MONTH), INTERVAL 23 HOUR), INTERVAL 59 MINUTE), TRUE, FALSE) AS manualIsSixMonthAgo, 
+                        c.video_name AS videoName, 
+                        c.video_number AS videoNumber, 
+                        c.manual_video_name AS manualVideoName, 
+                        c.manual_video_number AS manualVideoNumber 
+                FROM 
+                    courses c 
+                LEFT JOIN (SELECT  
+                    *, COALESCE(vr_view_count, 0) AS vrViewCount 
+                FROM 
+                    view_logs 
+                WHERE 
+                    student_id = :studentId) v ON c.id = v.course_id 
+                LEFT JOIN students s ON s.id = v.student_id 
+                INNER JOIN (SELECT  
+                    * 
+                FROM 
+                    contract_course 
+                WHERE 
+                    contract_id LIKE (SELECT  
+                            contract_id 
+                        FROM 
+                            students 
+                        WHERE 
+                            id = :studentId)) cc ON cc.course_id = c.id 
+                LEFT JOIN questions q ON q.course_id = c.id 
+                LEFT JOIN (SELECT  
+                    MAX(correct) AS correct, question_id, MAX(answer) AS answer 
+                FROM 
+                    answers 
+                WHERE 
+                    student_id = :studentId 
+                GROUP BY question_id) a ON a.question_id = q.id 
+                LEFT JOIN offices o ON o.id = s.office_id 
+                WHERE c.id in :courseIdList and  
+                    (c.manual_flag = 1 OR c.flag = 1) 
+                GROUP BY c.id) c

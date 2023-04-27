@@ -56,19 +56,18 @@ sử dụng event.preventDefault()
 - data option: là 1 function return list các state
 data() {
    return {
-	instamce1: 'helo', -> state
+	  instamce1: 'helo',     ===> state
    }
 }
 - Các instance (tham chiếu bởi this trong vue ) của 1 component sẽ 
-được thêm vào khi cá instance lần đầu tiên  được khởi tạo (khi component 
-được mount)
+được thêm vào khi cá instance lần đầu tiên  được khởi tạo (created())
 - Với các state trong top-level data(), không nên dùng biến bắt đầu với 
 $ và _ vì đây là tên các biến sử dụng nội bộ của vue hoặc các built-in API
 vd $ref ....
 
 
 - Method không nên sử dụng arrow function, vì nó ngăn chặn Vue binding this
-- khi thay đổi state có theert DOM chưa update ngay, 
+- khi thay đổi state có thể DOM chưa update ngay, 
 có thể sử dụng nextTick để đảm bảo DOM đã được update khi state thay đổi
 
 
@@ -81,7 +80,7 @@ const newObject = {
       age: 2
     }
 this.testObject = newObject;
-this.isEqual = (newObject ===  this.testObject)  ---> false
+this.isEqual = (newObject === this.testObject)  ---> false
 vì instance testObject khi được gán bằng object mới sẽ trở thành proxy của 
 đối tượng đó
 
@@ -158,7 +157,7 @@ index : vị trí (thứ tự) của trường trong object
 
 
 ======== Form input binding ============
-- Với thẻ input type="checkboc", vue hỗ trợ 2 giá trị bắt sự thay đổi 
+- Với thẻ input type="checkbox", vue hỗ trợ 2 giá trị bắt sự thay đổi 
 của input 
 :true-value="dynamicTrueValue"
 :false-value="dynamicFalseValue"
@@ -179,7 +178,7 @@ Callback Flush Timing : watcher sẽ truy cập vào DOM sau khi DOM được up
 - Chỉ có thể tham chiếu đến đối tượng qua thuộc tính ref sau khi đối tượng đã
 được mounted
 - Có thể dùng ref trong v-for và khi tham chiếu đến sẽ được 1 mảng chứa tất 
-cả các elements trong v-for, tuy nhiên thứ tự eelemnet trong mảng này 
+cả các elements trong v-for, tuy nhiên thứ tự elemnet trong mảng này 
 sẽ không đảm bảo như trong mảng gốc
 
 - Dùng ref cho component child trong component cha
@@ -293,7 +292,231 @@ cập nhật ỏ component con)
 
 ===================== Event Bus ==================
 https://kouty79.medium.com/a-journey-from-the-eventbus-pattern-to-vuex-architecture-e06152df143f
+
 =================================== Routing VueJS ============================================
+1.this.$route.params: trả về object chứa param dynamic trên routing path, this.$route.query : trả về query URL
+- nếu có nhiều param trên đường dẫn, sẽ trả về object có nhiều attribute chứa các params đó
+- route, routing là asynchronous
+1.1 dynamic route 
+const routes = {
+  path: '/user/:id',
+  name: "user"
+  component: UserComponent
+}
+
+2. Dùng để matching tất cả request: dùng regexp (.*)
+{ path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
+- Dùng để matching tất cả request bắt đầu bằng user 
+path: '/user-:afterUser(.*)'
+
+3 Trong trường hợp dùng dynamic route matching, nếu có 2 routing cùng param, VD
+/:userId
+/:productName
+==> 2 path trên sẽ cùng trỏ đến 1 URLs, để phân biệt 2 route này, có 2 cách
+c1. Thêm phần tiền tố đằng trước 
+/u/:userId
+/p/:productName
+c2. thêm regex để chỉ định 1 route nào đó được math với URLs (ví dụ userId chỉ match với param là numbers)
+ { path: '/:orderId(\\d+)' },  giải thích: \d+ : digital từ 0-9 và có thể có nhiều số
+
+
+4. Params lặp lại (repeatable params)  (* có thể có param này hoặc nhiều params) (+ có 1 hoặc nhiều param)
+ // /:chapters -> matches /one, /one/two, /one/two/three, etc
+{ path: '/:chapters+' }, 
+  // /:chapters -> matches /, /one, /one/two, /one/two/three, etc
+{ path: '/:chapters*' },
+
+
+5. strict route
+- match đúng đường dẫn, ko thừa \
+
+6. Tạo optional params
+ /userId? ==>? có thể có param này hoặc không
+
+
+7. route lồng nhau (nested route)
+  {
+    path: '/user/:id',
+    component: User,
+    children: [
+      {
+        // UserProfile will be rendered inside User's <router-view>
+        // when /user/:id/profile is matched
+        path: 'profile',
+        component: UserProfile,
+      },
+      {
+        // UserPosts will be rendered inside User's <router-view>
+        // when /user/:id/posts is matched
+        path: 'posts',
+        component: UserPosts,
+      },
+    ]
+  }
+- Trong component cha phải có thẻ <router-view></router-view>
+- Nếu muốn chỉ cần truy cập đến url của parent và render ra component con, path trong children cần để rỗng ''
+- nếu trong component con khai báo với / -> tạo ra đường dẫn tuyệt đối mà ko include path ở component cha bên ngoài
+
+8. method push để đưa url mới vào trong stack, vì vậy click button back trên browser sẽ navigate về url trước đó.
+this.$router.push = <router-link to="" />
+- Có thể push 1 object 
+      this.$router.push({
+        name: 'profile',
+        params: {
+          id: 2
+        }
+      })
+
+- khi dùng path, params sẽ không có tác dụng nữa
+- params có thể truyền vào 1 array
+- Chi tiết về programic navigation
+
+9 Replace : thay thế url hiện tại mà không đưa vào history stack
+router.push({ path: '/home', replace: true })
+// equivalent to
+router.replace({ path: '/home' })
+
+
+10. Traverse history
+router.go(n): n dương: forward n trang, n âm: back lại n trang 
+
+https://router.vuejs.org/guide/essentials/navigation.html
+
+
+
+11. Named view
+- Dùng nhiều view cùng một lúc (ví dụ: sidebar-view và main-view)
+- Trong component khai báo nhiều component khác nhau -> cần dùng tên để gọi đên đúng componet đó
+Tên component tương ứng sẽ được đặt trong thuộc tính name của thẻ <router-view></router-view>
+
+
+12. Redirect, alias
+- Chuyển hướng người dùng khi người dùng truy cập 1 url (mà url đó đã được đổi tên thành url khác)
+- alias: (bí danh) cung cấp tên gọi khác của url
+
+13. Props
+const routes = [{ path: '/user/:id', component: User, props: true }]
+- khi props set bằng true, params của url sẽ được truyền thành props
+
+14. Navigation guards
+- Kiểm soát việc routing đến 1 trang web
+- https://router.vuejs.org/guide/advanced/navigation-guards.html
+3 cách kiểm soát truy cập vào URL
+
+C1. Define global
+router.beforeEach(async (to, from) => {
+
+  if(to.name === 'login') {
+
+  // call api to determine user permission
+
+    do sthing / redirect to another url
+
+  }
+})
+router.beforeResolve (
+...
+)
+
+beforeEach vs beforeResolve có cách hoạt động khác nhau. beforeEach kiểm tra quyền của người dùng có được phép truy cập 
+vào routing hiện tại hay không. Tronhg khi beforeResolve đảm bảo tất cả các promise đã được resolved, sau khi tất cả các in-components
+và route đồng bộ được hoàn thành
+
+C2. Per-Route Guard
+- Guards với từng route riêng lẻ
+- Dùng phhuwong thức beforeEnter, phương thức này chỉ được trigger khi routing path thay đổi, ko được kích hoạt
+nếu params có sự thay đổi 
+
+
+C3. In-component guard
+dùng các phương thức: beforeRouteEnter ..., tuy nhiên sẽ ko truy cập được vào component instance
+tuy nhiên có thể sử dụng next để truy cập đến component instance khi navigation đã được confirm
+
+- beforeRouteLeave : xác nhận người sử dụng rời khỏi trang web mà chưa save nội dung
+
+15. Route meta field
+- Bổ sung việc xác thực người dùng, thuộc tính meta được định nghĩa trong mỗi route record, meta chứa 1 object 
+
+16. Scroll
+- Dùng để lưu lịch sử scroll 
+
+
+17. Lazy Loading Routes
+- Thông thường như đã làm từ đầu khóa học, file route index sẽ import toàn bộ component dùng để route vào file này,
+tuy nhiên khi ứng dụng trở nên lớn hơn, việc import này sẽ ảnh hưởng đến tính hiệu quả của hệ thống. Đê cải thiện, ta sẽ sửu dụng
+lazy loading, quá trình import được thực thi ở mỗi routing record -> chỉ khi nào component được routes đến mới cần import component đó
+
+18. Navigation failure
+- Xử lý nếu navigation có lỗi xảy ra 
+
+const navigationResult = await router.push('/my-profile')
+
+- dùng hàm NavigationFailureType để kiểm tra failur
+
+19. Dynamic route
+- router.addRoute() and router.removeRoute() thêm và hủy bỏ routing tương ứng.
+
+
+
+==== Webpack bundler/ babel bundler là gì? =========
+- Webpack: dùng để đóng gói code và tối ưu hiệu suất hoạt động
+- babel: dùng để biên dịch mã js từ phiên bản cao hơn để có thể hoạt động ở các trình duyệt cũ
+
+
+
+
+================= Vuex =======================
+- Store trong vuex là reactive, khi 1 component sử dụng state được chứa ở store, khi có thay đổi trong store
+state cũng sẽ được cập nhật
+- Mỗi sự thay đổi sẽ phải sử dụng mutations, từ đó đảm bảo việc record lại các thay đổi
+
+
+1. State
+1.1 Nên khai báo các giá trị state này trong computed của mỗi component để những thay đổi sẽ được cập nhật đồng bộ
+trên component (cách này làm code dài dòng nếu có nhiều computed)
+
+1.2 Dùng mapState: mapState trả về 1 object nên có thể spread với computed của component
+- Dùng array
+    computed: mapState([
+        'count'
+    ])
+- Dùng object
+    computed: mapState({
+        count: state => state.count
+    })
+
+2. getters
+Tính giá trị biểu thức phức tạp & được sử dụng bởi nhiều component 
+Trong getter ngoài nhận giá trị tham số state của vuex, ta còn có thể truyền vào một tham số khác để sử dụng 
+ở component gọi đến getters đó. Khi đó trong arrow fnction sẽ sử dụng 2 lần dấu => 
+
+3. mutations
+Khai báo mutations gồm có 2 phần 
+mutations: {
+    increment(state) { // increment: type, callback bên trong là handler
+      state.count++;
+    },
+  },
+
+- gọi đến mutations: this.$store.commit("mutations type")
+- Sử dụng file mutations type tách biệt thành module
+// mutation-types.js
+export const SOME_MUTATION = 'SOME_MUTATION'
+[SOME_MUTATION] (state) {
+  // mutate state
+}
+- Tương tự state và getter, ta cũng có thể sử dụng ...mapMuatations([]) trong method của component
+
+
+
+
+
+
+
+
+
+
+
 
 // i18n
 https://github.com/PhraseApp-Blog/vue-i18n-demo/tree/master/src/locales

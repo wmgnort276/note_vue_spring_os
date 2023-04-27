@@ -308,16 +308,44 @@ OutputStream
 
 	- Các method trong OuputStream: write (ghi byte / array of bytes), flush (flust ouput stream), close ...
 	- FileOutputStream: ghi file, sử dụng bytes. Ghi string cần chuyển sang bytes : s.getBytes() (return byte[])
-	- BufferOutputStream: dùng buffer để lưu output stream. Cú pháp: 
+	- BufferedOutputStream : ghi data ra buffer thay vì ghi trực tiếp ra stream. Thông thường stream đọc / ghi từng byte, tuy nhiên 
+	với buffer, dữ liệu được đọc / ghi trước vào buffer và available cho những lần gọi tiếp theo. Trong buffer có phương thức mark() để dánh dấu
+	vị trí con trỏ trong buffer, và phương thức reset() để quay trở về vị trí đã được đánh dấu
+	- ByteArrayOutputStream : dùng để ghi dữ liệu ra một byte array tạm thời và để sử dụng sau đó (có thể ghi ra nhiều file dữ liệu khác nhau)
+	- flush() giúp ghi ngay lập tức dữ liệu trong buffer, điều này làm giảm tốc độ ghi dữ liệu tuy nhiên nó lại đảm bảo được
+	việc ghi dữ liệu diễn ra ngay lập tức thay vì phải đợi đến khi buffer đầy hoặc phương thức close() được gọi.
 
 - InputStream: đọc data từ file... 
 	- Các method: read (đọc từng byte, trả về -1 nếu đọc đến cuối file), available (trả về số lượng byte có
 	 để đọc từ input stream hiện tại)
-
-=========== Paging =================
-
+	- SequenceInputStream : đọc input từ nhiều stream khác nhau theo thứ tự
 
 
+8. Static  
+Là thành phần riêng của class (được khởi tạo một lần tại 1 nơi trong bộ nhớ khi class được load)
+state được khởi tạo ở thời điểm runtime thay vì compile
+
+=========== @Accessors =============
+-  tùy biến sửu dụng getter và setter trong lombok
+1. fluent = true -> loại bỏ tiền tố get và set trong getter và setter (vd: user.userName("NamVN") -- getter).
+2. chain = true -> setter method trả về this thay vì void, sử dụng giống builder pattern.
+3. frefix = {"s", "b"} : loại bỏ 1 số prefix gây khó hiểu trong thuộc tính.
 
 
+============= Logging ==============
+- Logging dùng để truy vết các thao tác sử dụng trên ứng dụng
 
+- File .groovy, .xml sẽ tự động được Spring Boot load vào file cấu hình mặc định
+- Sử dụng Slf4j với anotaiton sẽ sử dụng log mặc định
+
+
+======== getById vs findById ==========
+- getById: trả về tham chiếu (reference) đến entity đó (sử dụng khi việc truy cập vào các thuộc tính của đối tượng là không cần thiết)
+getById(): là lazy operation, không hề động đến DB
+getById(): gọi đến phương thức EntityManager.getReference()
+Sử dụng trong trường hợp muốn gán entity hiện tại cho 1 entity khác
+- findById: trả về 1 entity
+
+- Optional<>: object trả về sẽ không thể dùng với mappping, setting method , serialization
+- để trả về Object thường, dùng phương thức .get()
+=========== Paging ===========
