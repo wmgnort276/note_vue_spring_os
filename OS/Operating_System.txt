@@ -5,7 +5,7 @@
 
 Nguyên lý hệ điều hành
 - Có 2 nguyên lý hoạt động trong máy tính
-kernel mode: hệ điều hành (quyền truy cậ mọi tài nguyên hardware, I/O devices..)
+kernel mode: hệ điều hành (quyền truy cập mọi tài nguyên hardware, I/O devices..)
 user mode : chương trình phần mềm khác
 1. Khái niệm hệ điều hành: 
 - P34
@@ -124,6 +124,204 @@ Máy tính cỡ lớn
 UID trong UNIX được gọi là supperuser, windows là Administrator
 
 
-1.6 File 
+1.5.2 File 
 - Đường dẫn tuyệt đối: đường dẫn đi từ nút gốc
 - Đường dẫn tương đối: khi đang đứng ở 1 folder chỉ cần cung cấp đường dẫn tương đối của 1 địa chỉ
+- window dùng \ để ngăn cách trong đường dẫn, unix dùng dấu /
+- Nếu file được mở thành công, 1 số nguyên file descriptor (định danh cho file được mở) sẽ được trả về để sử dụng
+ cho các hoạt động tiếp theo
+- Mounted file system: gắn các bộ nhớ như USB, CD, DVD thành các thư mục con nằm cùng với thu mục file của máy Tính
+-> dễ dàng truy xuất dữ liệu
+
+1.5.3 Protection
+- Trong Unix: sử dụng 9 ký tự biểu đạt, mỗi 3 ký tự đại diện cho 3 user, owner - other group - every one
+VD rwxr-x---x 
+-> owner được sử dụng cả 3 quyền với tài nguyên
+-> group: được sử dụng 2 quyền đọc và thực thi
+-> every one : được duy nhất quyền thực thi file này
+
+1.6 System call
+- OS có 2 nhiệm vụ chính: cung cấp tài nguyên trừu tượng trong hệ thống + quản lý tài nguyên
+- System call: như 1 lời gọi đến tài nguyên máy tính ở mức kernal (vd đọc ghi file)
+- procedure call : là việc gọi 1 hàm trong cùng 1 chương trình, khác với system call
+- Ví dụ lời gọi hệ thống trong việc đọc file : trang 83
+
+POSIX system calls là interface cung cấp system call cho ứng dụng chạy trên nhiều hệ điều hành khác nhau
+các system call của POSIX
+    + read, write, socket(), bind() ...
+
+- Lời gọi hệ thống để  (trang 85)
+    + quản lý process
+        . fork: tạo ra tiến trình con với tham số giống với tiến trình cha, sau đó 2 tiến trình sẽ có data khác nhau 
+        và không hề ảnh hưởng lẫn nhau. Để phân biệt tiến trình cha và con dựa vào PID (id process children) (chú ý PID 
+        chỉ xuất hiện ở tiến trình cha)
+        . main(argc, argv, envp) : chương trình thực thi. VD với lệnh cp file1 file 2, argc: count số phần tử trong câu lệnh
+        argv: mảng chứa các phần tử trong câu lệnh (command), envp :  pointer to the environment (vd  directory name ...)
+        . 1 tiến trình (process trong UNIX có bộ nhớ gồm 3 phần: text, data, stack). Bộ nhớ stack có địa chỉ giảm dần. Bộ nhớ
+        stack tự động grows, bộ nhớ data thì cần có system call để thực hiện việc grows.
+        bộ nhớ data có địa chỉ tăng dần
+    + quản lý File
+        . Lệnh link(src/user1/file1, src/user2/file2): chia sẻ file đến một địa chỉ khác, với tên gọi có thể khác nhau. Tuy nhiên
+        2 file này có cùng tham chiếu đến địa chỉ file thông qua unique number (trong UNIX)
+        . Trong UNIX, directory là file lưu cặp giá trị (i-number, name-file).
+    + quản lý thư mục (directory)
+
+- Các loại lời gọi hệ thống với file và directory
++ chdir (cd): change directory
++ chmod: thay đổi mode của file (vd: rwer--r-e)
+
+- Trong UNIX system call và library call là coupling (liên quan chặt chẽ với nhau: 
+mỗi system call sẽ kèm theo 1 library call)
+- Trong windows, điều này được cải thiện bằng cách decoupling library call và system call
+system call trong window thực hiện qua các API trung gian: ví dụ sử dụng system 32 API 
+và .NET framework
+- Trong khi đó trong UNIX system call được thực hiện thẳng ở các ứng dụng
+
+1.7 Cấu trúc của OS
+1.7.1 Monolithic Systems
+- chỉ có 1 program duy nhất chạy ở kernel
+- Tất cả các procedure sẽ được compiles và binding thành 1 file thực thi duy nhất, và được gọi bất cứ 
+khi nào chương trình cần
+- Cấu trúc của OS trong trường hợp này
+    + program sẽ gọi đến service procedure
+    + service procedure sẽ thực hiện lời gọi hệ thống
+    + utility procedure sẽ hỗ trợ service procedure
+    - ngoài ra còn có các extension: vd trong window cố ddl (dynamic link library), Unix có shared library
+
+1.7.2 Layer Systems
+- Chia hệ thống thành các layer, từng layer đảm nhiệm chức năng riêng
+ các layer đều hoạt động ở kernel dẫn đến trường hợp phía dưới
+- Nếu có nhiều process hoạt động, nếu 1 process hoạt động sai có thể 
+dẫn đến cả hệ thống có thể hoạt động sai.
+VD 1 chương trình sử dụng bộ nhớ và phân bổ bộ nhớ sai dẫn đến các chương trình khác sử 
+dụng bố nhớ sai theo
+
+
+1.7.3 Microkernels
+- chia OS ra thành những phần nhỏ, chỉ có Microkernels chạy ở tầng kernell.
+Với mỗi ứng dụng có driver riieeng chạy trên tầng user, và ko thể truy cập trực tiếp
+vào tài nguyên kernel như bộ nhớ ... mà phải thông qua thông qua kernel call
+
+user program  --> server  ---> driver ---> kernel
+
+- để giảm tải kernel, áp dụng cơ chế: kernel (chứa machanism), user (chứa policy)
+Ví dụ việc áp dụng priorities cho tiến trình, việc xác điịnh priorities là machanism thực 
+hiện ở kernel, nhưng việc gán priorities cho tiến trình được thực hiện ở mức user
+
+1.7.4 Client -server
+- là 1 biến thể của Microkernels
+
+1.7.5 virtual machines
+- có máy ảo giống với hardware thật, nên có thể chạy bất kỳ OS nào chạy trên máy thật
+- VM dùng để tăng tương tác, timesharing giữa các chương trình, tiến trình trên hệ thống
+VMware, virtual box là các hypervisors (= virtual machine monitor ) thực hiện việc ảo hóa trên máy tính
+dùng để quản lý nhiều máy ảo khác nhau trên máy tính
+- type 1 hypervisor: hypervisor cài trực tiếp trên OS -> các máy ảo cũng được thao tác
+trên chính phần cứng đó (dùng trong các máy tính doanh nghiệp)
+- type 2 hypervisor: hypervisor được cài đặt như 1 tầng trung gian giữa máy ảo và OS thật của 
+hệ thống (dùng trong máy tính cá nhân)
+"the real distinction between a type 1 hypervisor and a type 2 hypervisor is that a type 2 makes
+ uses of a host operating system and its file system to
+create processes, store files, and so on. A type 1 hypervisor
+ has no underlying support and must perform all these functions itself"
+
+- Để dùng được máy ảo, CPU cần được hỗ trợ việc ảo hóa, nếu không cần có interpreters hỗ trợ việc này.
+VD Bochs trong Pentium 
+
+machine simulators: improve Bochs bằng việc dịch khối code, lưu vào cach, tái sử dụng.
+
+- Java Virtual Machine: Java compiler sẽ dịch code thành  byte-code để JVM có thể chạy được
+(khác với C, code được biên dịch thành mã máy)
+1.7.6 Exokernels
+- Phân chia tài nguyên cho từng virtual machine, thay vì phải tạo ra 1 layer ở trung gian 
+giữa các VM và tài nguyên hệ thống
+
+1.8 Lập trình C
+C được dùng để xây dựng windows
+- để xây dựng project lớn,mỗi file .c (chứa code) sẽ được biên dịch thành object file (.o) chứa câu
+lệnh nhị phân (binary instruction). Tất cả các file .o này sau đó được đưa đến linker tạo
+thành single executable binary file
+
+- Trong 1 chương trình có số lượng lớn file header, việc thay đổi 1 file sẽ ảnh hưởng đến rất 
+nhiều file khác gọi đến nó, khi đó thời gian compile là rất tốn kém. Vì vậy trong các 
+hệ điều hành cần có công cụ hỗ trợ việc này.
+
+
+============ Tổng kết ========
+Trả  lời quiz cuối bài: 
+https://quizlet.com/192906075/os-test-one-flash-cards/  
+- khác nhau của multi-programming vs time-sharing
++ multi-programming: với mục đích sử dụng tối đa CPU (CPU không được có thời gian rảnh)
++ trong timesharing: mục đích là giảm thời gian response -> CPU phân bổ cho từng tiến trình 1
+
+- trap vs interrupt: 
+trap là synchronous interrupt xảy ra ở tiến trình người dùng, dùng để chuyển từ user mode
+sang kernel mode
+interrupt: tín hiệu yêu cầu CPU xử lý, tạo ra từ phần mềm / phần cứng
+
+
+=============== II. Process =================
+- Tiến trình là chương trình đang thực thi
+- Nhờ có tiến trình, single CPU có khả năng hoạt động như multiple virtual CPU
+Cụ thể: khi 1 server nhận được 1 request, server sẽ kiểm trả kết quả trả về đã có trong cache
+hay chưa, nếu có lấy thông tin từ cache, ngược lại sẽ yêu cầu truy cập vào disk và lấy dữ liệu.
+Quá trình fetching dữ liệu từ disk là tốn thời gian, và trong khoảng thời gian này CPU sẽ 
+thực hiện đáp ứng cho các request khác. Để đảm bảo các công việc này diễn ra 1 cách đồng thời, 
+cần có 1 công cụ để đáp ứng --> giải pháp: process và thread
+- Khi máy tính người dùng khởi động, có rất nhiều tiến trình hoạt động: tiến trình emaiil, diệt virus,
+... 
+- Multiprogramming hỗ trợ multiprocessing
+- trong Multiprogramming CPU chuyển qua lại giữa process rất nhanh.
+- tại 1 thời điểm 1 CPU chỉ chạy trên 1 process, tuy nhiên với mỗi process thời gian CPU dành
+cho việc xử lý là khoảng  10 - 100 ms. Dẫn đến trong 1s, có thể xử lý rất nhiều process và 
+tạo cảm giác như việc thực thi là song song (parallel)
+
+2.1 The Process Model
+- mỗi phần mềm, OS là tập hợp các process
+- process là 1 chương trình đang thực thi, bao gồm thông tin về program counter, registers, and variables
+- một cpu thực thi 1 process tại 1 thời điểm
+- VD tương quan process: việc nấu ăn gồm công thức (program), nguyên liệu (data), người
+nấu (processor) -> việc thực hiện công việc nấu ăn chính là 1 process
+
+2.1.2 Process Creation
+các event khởi tạo process
++ khởi động hệ thống
++ 1 process (tiến trình) đang chạy thực hiện lời gọi hệ thống để khởi tạo 1 process
++ user request 
++ khởi động batch job
+
+
+- có 2 loại process: foreground (giao tiếp với chương trình users) vs background
+- deamons: là những tiến trình chạy ngầm dưới (background) 
+- tiến trình con được tạo ra từ tiến trình cha: trong UNIX tiến trình con ban đầu sẽ có
+địa chỉ giống tiến trình cha, sau đó nếu muốn ghi đè nội dung vào bộ nhớ sẽ được cấp 
+1 bộ nhớ mới là bản copy của bộ nhớ cũ. Ngược lại trong windows, tiến trình con đó sẽ được cấp 
+ngay bộ nhớ mới
+
+2.1.3 Process Termination
+Xảy ra khi: kết thúc công việc, error, killed by other process
+
+2.1.4 Process hierachy
+- Trong UNIX, sẽ có những process con được liên kết với process cha hình thành nên process hierachy.
+Data sẽ được truyền trong cả cây process này.
+- Trong window, mọi process đều là ngang hàng
+
+2.1.5 Process state
+3 trạng thái chính
+- running (đang chạy và đang sử dụng CPU)
+- ready (sẵn sàng chạy nhưng CPU chưa được cung cấp để thực thi)
+- blocked (chỉ được chạy nếu có sự kiện bên ngoài kích hoạt)
+- scheduler có nhiệm vụ phân bổ thời gian cho việc thực thi các tiến trình trong máy tính
+- 
+
+2.1.6 Implementation of Processes
+- Sử dụng process table chứa rất nhiều process control blocks (PCB)
+- PCB chứa thông tin về: program counter, stack pointer, memory allocation, open files.
+Thông tin này sẽ được dùng lại nếu procesor chuyển từ tiến trình khác về lại tiến trình cũ thực thi
+- interrupt vector chứa thông tin về interupt service procedure
+- Khi có interrupt, sẽ lưu thông tin registers của process hiện tại đầu tiên
+
+
+2.1.7 Modeling programming
+- degree of multiprogramming: (mức độ đa chương trình)  khả năng thực thi đa chương trình của CPU
+-
