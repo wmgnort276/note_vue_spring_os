@@ -1,0 +1,90 @@
+Dự án
+- Công ty HR one
+- việc khai báo thuế, bảo hiểm ... liên quan 
+- Công ty khác thuê HRone hỗ trợ các thủ tục trên
+- Việc quản lý đang được thực hiện 1 cách thủ công -> quản lý khó khăn
+==> cần hệ thống quản lý các thủ tục mà nhân viên yêu cầu
+
+các chức năng chính của hệ thống 
+- 7 chức năng chính
+
+- Phân quyền để triển khai giao diện hiển thị, dựa vào mã công ty check quyên hiển thị
++ Hướng dẫn và gửi thông báo: tạo thông báo cho người dùng (VD yêu cầu bổ sung chứng chỉ ...)
++ Yêu cầu: tạo request yêu cầu (ví dụ yêu cầu nghỉ thai sản) (có 2 loại: yêu cầu tự phát vd thai sản, và yêu cầu thực hiện từ thông báo bên trên)
++ FAQ: tạo các câu hỏi có sẵn trong hệ thống, câu trả lời riêng biệt cho các công ty
++ thông báo thông thường (thông báo ko có phản hồi )
++ quản lý file: đính kèm template
++ login
++ contact: form người dùng nhập nội dung câu hỏi (thông tin người dùng được lấy tự động)
+        - tạo thông báo: cần nhờ người duyệt phê chuẩn (người phụ trách của HROne)
+
+
+=========== list QA ============
+- contact ở đây làm nhiệm vụ gì: nếu FAQ không thể trả lời thỏa mãn yêu cầu thì 
+cần làm riêng 1 contact để lấy được thông tin.
+- tạo thông báo là chức năng thực hiện bởi nhân viên của HROne
+- Thông báo: với các thông báo đang có yêu cầu kiểm tra kỹ càng, sẽ hiển thị trong bảng 
+của người nhận yêu cầu kiểm tra, còn người tạo thì sao?
+- Với hiển thị chi tiết thông báo của người phụ trách HROne: chỉ có người tạo ra thông báo
+mới có khả năng edit, hay tất cả người phụ trách của HROne đều có khả năng này?
+
+- phần FAQ
++ phần link đính kèm là các câu trả lời tương tự, và có ranking tương tự
++ master information: tag, category
+
+- share file
++ 
+
+- Hướng dẫn - thông báo
++ Sự khác nhau giữa hướng dẫn thông báo (sheet 97) và thông báo (sheet 43) là gì?
+-> tự tìm hiểu: hướng dẫn thông báo thì sẽ đính kèm file để thực thi thay vì thông báo
+thông thường chỉ có nội dung thông báo
+
+Đã hỏi màn FAQ create 
+- message xóa thành công FAQ
+- calendar: 
+        + validate thông tin nhập bằng tay
+        + nội dung chỉ được hiển thị trong period chọn bằng calendar đúng ko?
+
+- Added by NamVN: - phần hiển thị trong chọn cong ty chỉ cần ngăn các bằng dấu phẩy thôi
+                        đúng không.
+
+Đã hỏi màn chi tiết FAQ
+- phần 〇〇〇〇〇〇〇〇〇 hiểu là mã công ty đúng hay không
+- ấn button hữu ích / không hữu ích trong phần đánh giá sẽ direct đến màn nào
+
+Câu hỏi từ API design màn hướng dẫn thông báo (entity 1)
+1. Ý nghĩa của các trường: code nghiệp vụ, code hồ sơ đề nghị (đang hiểu là code của file đính kèm),
+
+Câu hỏi màn theo từng staff_thông báo hướng dẫn (entity 2)
+1. Trường code nghiệp vụ ở đây có giống với trường mode xử lý (bên entity 1 hay không) hay không
+
+Câu hỏi màn master nghiệp vụ (entity 3)
+1. Không có
+
+Câu hỏi màn yêu cầu header (entity 4)
+1. Không có
+
+
+
+
+
+
+=====================================================
+================= Note buổi họp 19/5 (17h) ============
+- Màn hình admin: quản lý và search (4 loại thông tin) 
+hướng dẫn / thông báo / thúc giục / thông báo + hướng dẫn
+- Với thông báo hướng dẫn sẽ có thêm trường nhập nội dung hướng dẫn ...
+- Bấm vào title thông báo sẽ đi đến màn edit thông báo đó
+- những request chưa được xử lý sẽ được thúc dục
+- 
+
+- Màn hình top user: đi đến những màn hình request riêng của user
+- 
+
+============== 24/5 ========
+- Đổi kích thước màn hình content về max-width: 1120px
+- Đổi chiều cao ô input
+- Sử dụng icon sgv từ figma
+- bỏ inline css
+- 

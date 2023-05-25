@@ -62,6 +62,7 @@ flush sẽ cập nhật xuông DB
 Java persistence: cách quản lý dữ liệu trong ứng dụng, ánh xạ table trong DB
 sang mối quan hệ của object
 - Sử dụng EntityManager (interface) để tương tác với các entity
+- JPA sử dụng JPQL (java persist query language): truy vấn thông qua các đối tượng của java thay vì truy vấn trực tiếp đến DB
 
 ============ Hiberbnate=========
 - Giúp thao tác với DB thông qua các đối tượng, impliment JPA
@@ -194,6 +195,8 @@ các anotaion.  Nếu không, spring boot không thể xác định được fil
 @SpringBootApplication = @EnableAutoConfiguration + @ComponentScan + @Configuration
 @Configuration giúp class có thể đăng ký thêm các beans 
 Nếu sử dụng @ComponentScan, tất cả các component với annotation @Component, @Service , @Repository ...
+@Repository khi được đặt trước interface trong spring boot, JPA sẽ tự động tạo ra 1 impliments class của interface đó
+nên ta có thể inject trực tiếp đối tượng của class đó và sử dụng trong 1 class khác 
 sẽ tự động được đăng ký
 
 - Dùng @Import để import các configuration classes
@@ -226,16 +229,18 @@ https://www.javatpoint.com/java-string
 	1.5 String.format("%s%s", s1, s2);
 	1.6 Khi so sánh string, giá trị của chuỗi được so sánh
 
-2. StringBuffer
+
+
+ ================ 2. StringBuffer ====================
 - Tạo ra String có thể thay đổi (mutable)
 - Khi so sánh, reference được so sánh với nhau
-- Khôn overide equals() method của String
+- Không overide equals() method của String
 - Dùng Heap memory lưu string
 3. StringBuilder 
 - Tạo ra String có thể thay đổi (mutable) (khác với StringBuffer vì StringBuilder là non-synchronize)
 
 
-4. So sánh String
+ ================ 4. So sánh String  =================
 	4.1 equals: so sánh content của string
 	4.2 == operator: so sánh sử dụng tham chiếu của String
 	4.3 compare to trả về 1 giá trị: == trả về 0, lớn hớn trả về 1, nhỏ hơn trả về -1
@@ -245,7 +250,7 @@ https://www.javatpoint.com/member-inner-class
 5.2 
 
 
-6. Exception Handling 
+ ====================== 6. Exception Handling ===============
 - Là object throw lúc runtime, handling exceptions giúp các đoạn code phía sau khi xảy ra exceptions vẫ hoạt động
 - Check exceptions: được checked ở compile-time. VD: IOException, SQLExceptions
 - Unchecked  exceptions: các exceptions ở RuntimeException
@@ -290,7 +295,8 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 	báo exception cha (parent cuae exception định nghĩa ở method của class cha)
 
 
-7. Java I/O 
+
+======================================= 7. Java I/O ===============================
 - Dùng package java.io
 - stream là 1 chuỗi dữ liệu (sequence of data)
 - System.out: ouput stream tiêu chuẩn
@@ -310,9 +316,175 @@ throws: có thể throws nhiều exception tại 1 thời điểm, có thể dù
 	- SequenceInputStream : đọc input từ nhiều stream khác nhau theo thứ tự
 
 
-8. Static  
+
+
+==================================== 8. Static  ==========================================
 Là thành phần riêng của class (được khởi tạo một lần tại 1 nơi trong bộ nhớ khi class được load)
 state được khởi tạo ở thời điểm runtime thay vì compile
+
+
+
+
+ ==================== 9. Java serialization ======================
+- Thực hiện ở runtime
+- Viết state của object thành dòng byte (dùng nhiều trong JPA, Hiberbnate)
+- Ngược lại quá trình này là deserialization
+- Với serialization: dùng với object bằng cách gọi phương thức writeObject() của ObjectOuputStream
+- Với deserialization: dùng readObject() của ObjectInputStream
+- Object trong java thuần nếu ko sử dụng JPA cần inpliments serialization interface để marked là có thể chuyển 
+đổi về dạng byte stream. 
+- Trong kế thừa, nếu class cha implement serialization thì class con cũng sẽ có khả năng tương tự
+- Trong Aggregation (1 class có thuộc tính là 1 class khác): nếu class con bên trong không được implement serialization
+thì class ngoài gọi đến nó cũng không thể serialization
+- Nếu có thuộc tính static, thuộc tính sẽ không được serialization vì thuộc tính static thuộc về class thay vì thuộc về object. Nhưng nếu là final stream thì sẽ 
+được coi là hằng số và được ghi ra stream
+- serialVersionUID: định danh lớp được serialization, vì khi đối tượn được serialiable sẽ có nhiều phiên bản serialVersionUID khác nhau, 
+vì vậy các thiết bị khác nhau sẽ sử dụng cách định danh serialVersionUID khác nhau, vậy nên cần khai báo trường serialVersionUID củ thể 
+trong class để đảm bảo sự định danh đồng nhất giữa các thiết bị khác nhau
+- transient keyword: đánh dấu 1 trường sẽ ko được serialiable
+
+
+
+
+================================== 10. Java Reflection =================================
+
+- Thay đổi hành vi của class ở run time
+- java.lang.Class: cung cấp khả năng thay đổi hành vi của class trong thời gian runtime
+- các phương thức lấy tên class, kiểm tra class có là interface hay không ....
+- phương thức getClass() lấy class của đói tượng
+
+
+
+
+==========================  11. AnonymousClass ========================================
+- Class được khai báo và khởi tạo cùng 1 lúc. Không có tên class
+
+
+
+
+==========================  12. lambda expression  ====================================
+- functional interface: interface chỉ có 1 abstract method
+được đánh dấu : @functionalInterface
+- functial intenrface có thể có thêm các method của object class như toString, hashCode
+- functional interface ko thể kế thừa 1 functial interface có 1 abstract method, nhưng có thể kế thừa 1 interface ko là functial interface
+- Các predefined functional interface: https://www.javatpoint.com/java-8-functional-interfaces (vd Function<>, BiFunction<>-)
+
+
+- lambda expression: cung cấp inplimentation của functional interface
+Cấu trúc
+Ví dự, ta có interface Hello, trong đó chỉ có 1 method (functional interfacec)
+interface Hello {
+    public String say(String word);
+}
+
+main() {
+	// định nghĩa method của interface. Nếu ko sử dụng lambda expression, sẽ phải sử dụng AnonymousClass
+	// Biểu thức lambda: s -> s + "Xin chao" giống như việc khai báo 1 object
+	Hello hello = s -> s + "Xin chao"; 
+	System.out.println(hello.say("Nam "));
+}
+
+- Ví dụ trong trường hợp dùng forEach trong java, method này chấp nhận 1 object Comsumer, Consumer là 1 functial interface, nên biểu
+thức lambda có thể được sử dụng trong trường hợp này.
+
+
+
+
+============================= 13. Method reference (dùng dấu ::) =============================
+
+https://www.javatpoint.com/java-8-method-reference
+
+- Dùng để tham chiểu đến method 
+13.1 Dùng để tham chiếu đến tatic method của class (class có thể có nhiều static method)
+13.2 Tham chiếu đến instance method: tọa ra intance bằng từ khóa new, và dùng :: tham chiếu đến method của class đó
+13.3 Tham chiếu đến constructor: 
+interface Messageable{  
+    Message getMessage(String msg);  
+}  
+class Message{  
+    Message(String msg){  
+        System.out.print(msg);  
+    }  
+}  
+public class ConstructorReference {  
+    public static void main(String[] args) {  
+        Messageable hello = Message::new;  
+        hello.getMessage("Hello");  
+    }  
+}
+
+
+
+============================= 14. Các method trong 1 interface =========================================
+========================================================================================================
+
+- abstract method: method không có triển khai của interface, các class inplementation sẽ phải triển khai các method này
+- Default method : Method được triển khai nay bên trong interface. Thông thường interface chỉ được định nghĩa method mà không được triển khai nó
+- static method: method thuộc về interface, được gọi bằng tên interface
+- private interface: được gọi bởi static interface và default interface 
+
+
+
+========================= 15. Java Stream ===============================================
+https://www.javatpoint.com/java-8-stream
+- chuyển đói tượng trong các kiểu dữ liệu list, array, thiết bị vào ra qua "pipeline of computational operations"
+- để sắp xếp stream theo thứ tự giảm dần , có 3 cách
+		C1: Stream.of(...).sorted(Comparator.reverseOrder()).collect()             ==> using method of Comparator
+		C2: Stream.of(...).sorted((a, b) -> return (a > b) ? 1 : -1).collect()     ==> lambda function
+		C3: Stream.of(...).sorted((a, b) -> return b.compareTo(a)).collect()       ==> 
+
+- filter lặp để lọc lây phấn tử thỏa mãn
+- peek: trả về stream hiện tại thêm với action với từng phần tử (đối số nhận vào là Comsumer<T>)
+- map: lặp qua phần tử và có thể thay đổi phần tử đó (đối số nhận vào là Function<T,V>)
+- Collectors.toSet(): chuyển list về set, set không chứa các phần tử không trùng nhau
+
+
+=====================   @Contract(pure=true) ===========
+- annotation xác định đoạn mã nào đó là pure (cùng 1 đầu vào luôn trả ra cùng 1 kết quả, không phụ thuộc vào thời điểm gọi)
+
+
+============================= Comparator ======================================
+- Comparator.reverseOrder(): phương thức sử dụng trong hàm sorted của stream
+
+
+====================== Predicate<T> =================
+- Nhận vào 1 đối tượng trả về tính true false của đối tượng đó
+- là functional interface, có abstract method: test() dùng để kiểm tra tính đúng đắn của đối tượng đó
+VD Predicate<Interger> predicate = n -> n%2 == 0; 
+predicate.test(5) ===> false
+predicate.test(6) ===> true
+
+================= Collectors ==============
+- extends Object class
+- cung cấp các phương thức tính tổng, tính giá trị trung bình, số lượng phần tử ...
+
+
+============== StringJoiner =============
+- Tạo string với các ký tự ngăn cách, và các ký tự đầu cuối chuỗi (prefix, suffix)
+
+
+============= Optional class =================
+- Có method để check sự tồn tại của 1 object (presence)
+- các phương thức: isPresent, ifPresent ....
+
+
+====== java nashorn =========
+- chạy code js trong source code java, sử dụng jjs command-line, hoặc dùng code
+VD: sử dụng code chạy file js
+    ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");
+	ee.eval(new FileReader("hello.js"));
+
+======= Parallel sort =========
+- dùng riêng cho class Array
+- Tận dụng CPU nhiều nhân để sắp xếp dữ liệu đồng thời
+
+
+========== java type reference =====
+- tự động gọi đến method với tham số có kiểu tương ứng phù hợp
+- 
+
+
+
 
 =========== @Accessors =============
 -  tùy biến sửu dụng getter và setter trong lombok
@@ -337,4 +509,13 @@ Sử dụng trong trường hợp muốn gán entity hiện tại cho 1 entity k
 
 - Optional<>: object trả về sẽ không thể dùng với mappping, setting method , serialization
 - để trả về Object thường, dùng phương thức .get()
+
+
 =========== Paging ===========
+- JPARepository đã extend PagingAndSortingRepository
+- PageRequest : class impliments Pagable interface
+PageRequest.of(x, y): page thứ x + 1 và có y phần tử
+- Khi sử dụng với phương thức findAll, trả về đối tượng Page<> hoặc List<>
+Nếu đối tượng trả về là Page<>, bên cạnh trả về 1 list entity sẽ trả về thêm thông tin tổng số page hiện có bằng
+cách thực hiện thêm câu lệnh count query. Điều này làm giảm hiệu năng của việc query.
+- Để trả về 1 list bình thường, dùng phương thức getContent() của Page<>

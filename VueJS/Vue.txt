@@ -1,6 +1,6 @@
 application instance: app = createApp()
 
-- app config: sử dụng app (application instamce) => config errorHandler,
+- app config: sử dụng app (application instance) => config errorHandler,
 component (component có thế được sử dụng ở mọi nơi trong app)
 
 
@@ -297,6 +297,7 @@ https://kouty79.medium.com/a-journey-from-the-eventbus-pattern-to-vuex-architect
 1.this.$route.params: trả về object chứa param dynamic trên routing path, this.$route.query : trả về query URL
 - nếu có nhiều param trên đường dẫn, sẽ trả về object có nhiều attribute chứa các params đó
 - route, routing là asynchronous
+
 1.1 dynamic route 
 const routes = {
   path: '/user/:id',
@@ -516,7 +517,9 @@ và truyền tham số tương ứng
 - actions chứa những asynchronous operations
 - Param đầu vào là biến context
 
+await import('vue')).default.extend
 
+đợi đến khi hoàn thành việc import thư viện Vue vào hệ thống mới tạo ra component đó
 
 
 
@@ -529,6 +532,129 @@ https://phrase.com/blog/posts/vue-2-localization/
 
 
 
+============== Vue3: Composition API ================
+1. Reavtivity fundamentals 
+- reactive() trả về 1 proxy object 
+- reactive(proxy) == proxy
+- nested object bên trong reactive() cũng là 1 proxy
+- DOM được đẩy vào buffers và được update lần lượt, đợi DOM update hết có thể dùng nextTick(callback(có thế access vào DOM))
+- Thay đổi attribute trong Object cũng sẽ cập nhật lại DOM (deep reactivity)
+- reactive() không thế hoạt động với kiểu dữ liệu nguyên thủy (String, number) nên khi muốn sử dụng cần đưa các đối tượng đó 
+vào trong object
+- Nếu sử dụng biến local 
+const state = reactive({ count: 0 })
+let n = state.count
+n ++:  ==> sẽ không tạo ra sự thay đổi trong state vì reactivity connection đã lost
+
+- ref(): tracking dữ liệu ở mọi type, ref() có thể đưa vào trong object. khi đối tượng được khai báo bằng ref, nó sẽ được wrap vào 1 object khác
+Khi biến tracking bởi ref() khi được khai báo trong template sẽ không cần .value
+
+- unwrap sẽ áp dụng với top-level property (sử dụng bên trong interpolation {{ }})
+import { ref } from 'vue'
+const count = ref(0)
+- let n = count.value
+
+
+2. computed
+- là phương thức không thể thay đổi giá trị
+- trả về computed ref giống reactive
+- có thế try cập thông qua .value
+- có thế sử dụng writable computed bằng cách khai báo: get(), set() (tức thay đổi được giá trị computed)
+tự động unwrap khi sử dụng trong top-level property
+
+3. List rendering : 
+- với thẻ ul, bên trong mỗi phần tử chứa nhiều thẻ li, có thể dùng thẻ template để wrap các thẻ li này thành 1 thẻ thống
+nhất và dùng v-for trong thẻ template
+- Dùng key trong v-for để vue dễ nắm bắt sự thay đổi từng phần tử. Giá trị key nên là primitive value
+- Vue bắt được sự thay đổi reactive array khi sử dụng các method làm thay đổi array (push, pop, shift, splice ...)
+- Với những method không làm thay đổi array tuy nhiên trả về array mới (filter, slice, concat) -> Vue có khả năng reuse DOM thay vì xóa DOM cũ 
+và thay bằng DOM mới tương tứng với list mới.
+- với phương thức reverse() và sort(): trả về 1 array mới trước khi sử dụng phương thức này
+VD: [...array].reverse()
+
+3. Event handling
+- v-on="func"
+Nếu được truyền theo các dạng: func, func.fun, func['bar'] ==> sẽ được coi là method handlers
+Truyền theo các dạng: func(), count++ sẽ được coi là inline
+
+
+4. Form input binding
+- v-model: sử dụng trong nhiều tag khác nhau (input, textarea, select, type=checkbox ...)
+- có thể dùng input checkbox và binding nhiều giá trị tạo thành 1 mảng
+
+5. Lifecycle hook
+- onMounted method nếu sử dụng callback, callback đó sẽ được sử dụng trong component instance nên
+method này phải được xử lý đồng bộ (ko thể đặt trong setTimeout ...)
+
+6. watch(tham số thứ 1, callback)
+- tham số đầu tiên sẽ accept:
+             + ref
+             + reactive object
+             + getter function (ví dụ : () => x.value)
+             + array của nhiều sourse
+
+- watch với 1 ref object, khi muốn theo dõi sự thay đổi attribute của objec đó cần dùng { deep: true }
+- đối với reactive object, thay đổi trong nested object sẽ tự động được theo dõi. Tuy nhiên với việc sử dụng tham số 
+đầu tiên là getter function trả về 1 reactive object, sẽ chỉ watch được những thay đổi khi trả về object mới, nếu 
+muốn theo dõi sư thay đổi trong object này cần dùng { deep: true }
+
+- watchEffect: sử dụng ngay khi có sự thay đổi mà ko cần {immediate: true} , theo dõi sự thay đổi của những đối tượng
+được khai báo bên trong hàm, với objct nested nhiều vòng
+chỉ xem xét sự thay đổi của những property có sự thay đổi,tối ưu hơn deep watch
+
+- flush: mặc định watcher sẽ được thực hiện trước khi DOM có sự thay đổi (Vue component update), nên việc truy cập vào DOM
+bên trong watcher sẽ là error, để có thể thực hiện được, cần sử dụng flush: post, hoặc dùng method watchPostEffect()
+
+- 
+
+7. Refs
+<input ref="input">
+- ref dùng để truy xuất trực tiếp element sau khi nó được mounted
+- với composition api: khai báo cần cùng tên
+VD: const input = ref(null);
+
+- function refs: 
+VD :ref="function" -> được gọi mỗi khi component update
+
+- Ref on component: component cha chỉ được access vào component con nếu data ở component con được khai báo
+bên trong defineExpose({
+  ...
+})
+
+8. Component basic
+ Dùng props: sử dụng defineProps
+ props có thể dùng validator
+
+ 9. Event
+ Trong template, sử dụng $emit
+ Trong <script setup></script>: có thể sử dụng defineEmits([list emit]), sau đó gọi trực tiếp đến emit tương ứng
+ trong funtion
+ - Trong list emit bên trong defineEmits có thể sử dụng Object, từ đó Validate payload truyền vào
+
+
+10. Fallthrough attribute
+Dùng usrAttr để attribute
+
+
+12. Custome directive
+- Là 1 object containing Lifecycle hook (mounted, ...)
+- Biến bắt đầu bằng v sẽ được coi là  directive (trong <script setup />) 
+
+const vDirective = {
+  mounted: (el) => {
+    ....
+  }
+}
+
+Đối số trong Lifecycle hook
+- el: tham chiếu trực tiếp đến đối tượng DOM
+- binding: object có các thuộc tính (value: giá trị truyền vào binding)
+
+13. Plugin
+- Code chưa chức năng ở app-level cho ứng dụng
+- app.use(plugin, {
+  ...
+})
 
 
 
@@ -540,7 +666,72 @@ https://phrase.com/blog/posts/vue-2-localization/
 
 
 
+============= Type script ==========
+- Hỗ trợ lập trình hướng đối tượng
+- Cần khai báo kiểu dữ liệu rõ ràng cho biến
+- VD let a : string = "string"
 
+1. Props
+- có 2 cách định nghĩa 
+------------ c1. runtime declaration --------------
+const props = defineProps({
+  ... list props
+})
+
+-----------c2. type-based declaration-------------
+- ở đấy sử dụng generic type
+const props = defineProps<{
+  ...
+}>()
+- có thể sử dụng default values
+export interface Props {
+  msg?: string
+  labels?: string[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  msg: 'hello',
+  labels: () => ['one', 'two']
+})
+- Có thể định nghĩa props dạng Object
+
+
+2. emits
+c1. khai báo kiểu runtime
+const emit = defineEmits(['change', 'update'])
+
+c2. typed-based 
+const emit = defineEmits<{
+  (e: 'change', id: number): void
+  (e: 'update', value: string): void
+}>()
+
+
+
+
+
+
+
+
+
+
+
+============= CKEditor ==========
+- user theo dõi sự thay đổi đến edit area 
+- có thể export PDF 
+-
+
+
+
+
+
+
+
+
+
+
+
+============== Swaggger =====================
 
 
 

@@ -1,12 +1,9 @@
-let obj = {
-    name: 'namvn',
-    age: 20
+let s = {
+    name: 'string',
+    age: 1
 }
 
-let objProxy = new Proxy(obj, {
-    get: () => {
-        console.log("you are getting attribute of object");
-    }
-})
+let s1 = s;
 
-console.log(obj.get);
+s= 1
+console.log(s1);

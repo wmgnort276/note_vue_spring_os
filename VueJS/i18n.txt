@@ -1,0 +1,5 @@
+File env: cấu hình các ngôn ngữ
+file i18n.js cấu hình Vue sử dụng VueI18n
+config plugin trong vue.config
+
+- set up locale :  this.$i18n.locale = locale
